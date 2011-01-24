@@ -15,14 +15,14 @@ import net.htmlparser.jericho.Source;
 
 public class Collection {
 	private final String feed = "http://books.google.com/books?rview=1&hl=en";
-	private final Language language;
+	private CollectionCache<String,Book> cache;
 	
 	public Collection() {
-		this(Language.ENGLISH);
+		cache = new CollectionCache<String,Book>();
 	}
 	
-	public Collection(Language language) {
-		this.language = language;
+	public Collection(int cacheLimit) {
+		cache = new CollectionCache<String,Book>(cacheLimit);
 	}
 	
 	public ArrayList<Book> getBooks(String query) throws IOException {
@@ -44,7 +44,23 @@ public class Collection {
 			
 			if (urls.size() > 0) {
 				String url = urls.get(0).getAttributeValue("href");
-				result.add(new Book(new URL(url.substring(0,url.indexOf("&")))));
+				int beginId = url.indexOf("id=")+3;
+				int endId = beginId+url.substring(beginId).indexOf("&");
+				
+				if (endId < 0)
+					endId = url.length()-1;
+				
+				String id = url.substring(beginId,endId);
+				Book book;
+				
+				if (cache.containsKey(id))
+					book = cache.get(id);
+				else {
+					book = new Book(id);
+					cache.put(book.getId(), book);
+				}
+				
+				result.add(book);
 			}
 		}
 		
@@ -53,9 +69,5 @@ public class Collection {
 	
 	public ArrayList<Book> getRelatedBooks(Book book) throws IOException {
 		return getBooks("related:ISBN"+book.getISBN());
-	}
-	
-	public Language getLanguage() {
-		return this.language;
 	}
 }

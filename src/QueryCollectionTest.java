@@ -13,12 +13,11 @@ import com.google.books.unofficial.api.Collection;
 
 public class QueryCollectionTest {
 	
-	Collection collection;
+	Collection collection = new Collection();;
 	ArrayList<Book> books;
 	
 	@Before
 	public void setUp() throws Exception {
-		collection = new Collection();
 		try {
 			books = collection.getBooks("Blue Ocean Strategy");
 		} catch (IOException e) {
@@ -27,35 +26,35 @@ public class QueryCollectionTest {
 		}
 	}
 
-//	@Test
-//	public void queryBooks() {
-//		for (Book b : books)
-//			System.out.println(b);
-//	}
-//	
-//	@Test
-//	public void titleBooks() {
-//		for (Book b : books)
-//			System.out.println(b.getTitles());
-//	}
-//	
-//	@Test
-//	public void summaryBooks() {
-//		for (Book b : books)
-//			System.out.println(b.getSummary());
-//	}
-//	
-//	@Test
-//	public void wordBooks() {
-//		for (Book b : books)
-//			System.out.println(b.getWords());
-//	}
-//	
-//	@Test
-//	public void isbnBooks() {
-//		for (Book b : books)
-//			System.out.println(b.getISBN());
-//	}
+	@Test
+	public void queryBooks() {
+		for (Book b : books)
+			System.out.println(b);
+	}
+	
+	@Test
+	public void titleBooks() {
+		for (Book b : books)
+			System.out.println(b.getTitles());
+	}
+	
+	@Test
+	public void summaryBooks() {
+		for (Book b : books)
+			System.out.println(b.getSummary());
+	}
+	
+	@Test
+	public void wordBooks() {
+		for (Book b : books)
+			System.out.println(b.getWords());
+	}
+	
+	@Test
+	public void isbnBooks() {
+		for (Book b : books)
+			System.out.println(b.getISBN());
+	}
 	
 	@Test
 	public void relatedBooks() {

@@ -38,10 +38,11 @@ public class Book {
 	private boolean cachedSubtitles;
 	private boolean cachedWords;
 	
-	public Book(URL url) throws IOException {
-		this.id = url.getFile().substring(url.getFile().indexOf("id=")+3);
+	public Book(String id) throws IOException {
+		this.id = id;
 		
 		Config.LoggerProvider=LoggerProvider.DISABLED;
+		URL url = new URL("http://books.google.com/books?id=" + id);
 		HttpURLConnection bookCon = (HttpURLConnection) url.openConnection();
 		bookCon.addRequestProperty("User-Agent", "Mozilla/5.0");
 		this.source=new Source(bookCon);	
@@ -167,8 +168,12 @@ public class Book {
 					addAuthor(e.getTextExtractor().setIncludeAttributes(false).toString());
 			} else if (label.equals("Uitgever") || label.equals("Publisher")) {
 				String[] values = metavalues.get(i).getTextExtractor().setIncludeAttributes(false).toString().split(", ");
-				setPublisher(values[0]);
-				setPublishingYear(Integer.parseInt(values[1]));
+				
+				if (values.length >= 1)
+					setPublisher(values[0]);
+				
+				if (values.length >= 2)
+					setPublishingYear(Integer.parseInt(values[values.length-1]));
 			}
 				
 		}
