@@ -1,5 +1,7 @@
 package com.google.books.unofficial.api;
 
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -16,6 +18,7 @@ public class Book {
 	private final Source source;
 	private final String id;
 	
+	private Image cover;
 	private String summary;
 	private float rating = -1f;
 	private String isbn;
@@ -27,6 +30,7 @@ public class Book {
 	private ArrayList<String> words = new ArrayList<String>();
 	private ArrayList<String> authors = new ArrayList<String>();
 	
+	private boolean cachedCover;
 	private boolean cachedSummary;
 	private boolean cachedRating;
 	private boolean cachedMetadata;
@@ -61,6 +65,19 @@ public class Book {
 	
 	public String getId() {
 		return this.id;
+	}
+	
+	public Image getCover() throws IOException {
+		if(!hasCachedCover()) {
+			Element element = source.getElementById("summary-frontcover");
+			
+			URL url = new URL(element.getAttributeValue("href"));
+		    setCover(Toolkit.getDefaultToolkit().getImage(url));
+			
+			setCachedCover(true);
+		}
+
+		return this.cover;
 	}
 	
 	public String getSummary() {
@@ -193,6 +210,10 @@ public class Book {
 		return this.publishingYear;
 	}
 	
+	private void setCachedCover(boolean b) {
+		this.cachedCover = b;
+	}
+	
 	private void setCachedTitles(boolean b) {
 		this.cachedTitles = b;
 	}
@@ -217,6 +238,10 @@ public class Book {
 		this.cachedMetadata = b;
 	}
 	
+	private void setCover(Image cover) {
+		this.cover = cover;
+	}
+	
 	private void setSummary(String summary) {
 		this.summary = summary;
 	}
@@ -235,6 +260,10 @@ public class Book {
 	
 	private void setPublishingYear(int year) {
 		this.publishingYear = year;
+	}
+	
+	public boolean hasCover() throws IOException {
+		return (getCover() != null);
 	}
 	
 	public boolean hasTitles() {
@@ -267,6 +296,10 @@ public class Book {
 	
 	public boolean hasPublisher() {
 		return (getPublisher() != null);
+	}
+	
+	private boolean hasCachedCover() {
+		return cachedCover;
 	}
 	
 	private boolean hasCachedTitles() {
