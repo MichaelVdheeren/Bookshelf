@@ -19,6 +19,7 @@ public class Book {
 	private final String id;
 	
 	private Image cover;
+	private URL coverUrl;
 	private String summary;
 	private float rating = -1f;
 	private String isbn;
@@ -31,6 +32,7 @@ public class Book {
 	private ArrayList<String> authors = new ArrayList<String>();
 	
 	private boolean cachedCover;
+	private boolean cachedCoverUrl;
 	private boolean cachedSummary;
 	private boolean cachedRating;
 	private boolean cachedMetadata;
@@ -70,15 +72,21 @@ public class Book {
 	
 	public Image getCover() throws IOException {
 		if(!hasCachedCover()) {
-			Element element = source.getElementById("summary-frontcover");
-			
-			URL url = new URL(element.getAttributeValue("href"));
-		    setCover(Toolkit.getDefaultToolkit().getImage(url));
-			
+		    setCover(Toolkit.getDefaultToolkit().getImage(getCoverUrl()));
 			setCachedCover(true);
 		}
 
 		return this.cover;
+	}
+	
+	public URL getCoverUrl() throws IOException {
+		if(!hasCachedCoverUrl()) {
+			Element element = source.getElementById("summary-frontcover");
+			setCoverUrl(new URL(element.getAttributeValue("href")));
+			setCachedCoverUrl(true);
+		}
+
+		return this.coverUrl;
 	}
 	
 	public String getSummary() {
@@ -219,6 +227,10 @@ public class Book {
 		this.cachedCover = b;
 	}
 	
+	private void setCachedCoverUrl(boolean b) {
+		this.cachedCoverUrl = b;
+	}
+	
 	private void setCachedTitles(boolean b) {
 		this.cachedTitles = b;
 	}
@@ -245,6 +257,10 @@ public class Book {
 	
 	private void setCover(Image cover) {
 		this.cover = cover;
+	}
+	
+	private void setCoverUrl(URL coverUrl) {
+		this.coverUrl = coverUrl;
 	}
 	
 	private void setSummary(String summary) {
@@ -307,6 +323,10 @@ public class Book {
 		return cachedCover;
 	}
 	
+	private boolean hasCachedCoverUrl() {
+		return cachedCoverUrl;
+	}
+	
 	private boolean hasCachedTitles() {
 		return cachedTitles;
 	}
@@ -332,6 +352,8 @@ public class Book {
 	}
 	
 	public void resetCache() {
+		setCachedCover(false);
+		setCachedCoverUrl(false);
 		setCachedRating(false);
 		setCachedSubtitles(false);
 		setCachedSummary(false);
@@ -340,11 +362,17 @@ public class Book {
 		setCachedMetadata(false);
 	}
 	
+	@Override
 	public String toString() {
 		return this.id;
 	}
 	
-	public boolean equals(Book b) {
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Book))
+			return false;
+		
+		Book b = (Book) o;
 		return getId().equals(b.getId());
 	}
 }

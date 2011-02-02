@@ -29,7 +29,9 @@ public class CollectionCache<K, V> extends LinkedHashMap<K, V> {
 		this.maxEntries = maxEntries;
 	}
 	
-    protected boolean removeEldestEntry(Map.Entry eldest) {
+	
+	@Override
+    protected boolean removeEldestEntry(Map.Entry<K,V> eldest) {
     	return size() > maxEntries;
     }
 }
