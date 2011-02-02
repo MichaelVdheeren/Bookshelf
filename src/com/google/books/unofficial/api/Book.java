@@ -8,6 +8,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.books.unofficial.api.exceptions.InvalidISBNException;
+
 import net.htmlparser.jericho.Config;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
@@ -22,7 +24,7 @@ public class Book {
 	private URL coverUrl;
 	private String summary;
 	private float rating = -1f;
-	private String isbn;
+	private ISBN isbn;
 	private String publisher;
 	private int publishingYear;
 	
@@ -44,10 +46,29 @@ public class Book {
 		this.id = id;
 		
 		Config.LoggerProvider=LoggerProvider.DISABLED;
-		URL url = new URL("http://books.google.com/books?id=" + id);
-		HttpURLConnection bookCon = (HttpURLConnection) url.openConnection();
+		
+		HttpURLConnection bookCon = (HttpURLConnection)
+				(new URL("http://books.google.com/books?id=" + id)).openConnection();
 		bookCon.addRequestProperty("User-Agent", "Mozilla/5.0");
 		this.source=new Source(bookCon);	
+	}
+	
+	public Book(ISBN isbn) throws IOException {
+		Config.LoggerProvider=LoggerProvider.DISABLED;
+		
+		HttpURLConnection bookCon = (HttpURLConnection)
+				(new URL("http://books.google.com/books?isbn=" + isbn)).openConnection();
+		bookCon.addRequestProperty("User-Agent", "Mozilla/5.0");
+		this.source=new Source(bookCon);
+		
+		String url = bookCon.getURL().toString();
+		int beginId = url.indexOf("id=")+3;
+		int endId = beginId+url.substring(beginId).indexOf("&");
+		
+		if (endId < 0)
+			endId = url.length()-1;
+		
+		this.id = url.substring(beginId,endId);
 	}
 	
 	private void addTitle(String title) {
@@ -169,12 +190,17 @@ public class Book {
 			
 			if (label.equals("ISBN")) {
 				String[] isbns = metavalues.get(i).getTextExtractor().setIncludeAttributes(false).toString().split(", ");
-				setISBN(isbns[0]);
-			} else if (label.equals("Auteur") || label.equals("Author")) {
+				try {
+					setISBN(new ISBN(isbns[0]));
+				} catch (InvalidISBNException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else if (label.equals("Author") || label.equals("Authors")) {
 				List<Element> elements = metavalues.get(i).getAllElements(HTMLElementName.A);
 				for (Element e : elements)
 					addAuthor(e.getTextExtractor().setIncludeAttributes(false).toString());
-			} else if (label.equals("Uitgever") || label.equals("Publisher")) {
+			} else if (label.equals("Publisher")) {
 				String[] values = metavalues.get(i).getTextExtractor().setIncludeAttributes(false).toString().split(", ");
 				
 				if (values.length >= 1)
@@ -187,7 +213,7 @@ public class Book {
 		}
 	}
 	
-	public String getISBN() {
+	public ISBN getISBN() {
 		if (!hasCachedMetadata()) {
 			cacheMetadata();
 			setCachedMetadata(true);
@@ -271,7 +297,7 @@ public class Book {
 		this.rating = rating;
 	}
 	
-	private void setISBN(String isbn) {
+	private void setISBN(ISBN isbn) {
 		this.isbn = isbn;
 	}
 	

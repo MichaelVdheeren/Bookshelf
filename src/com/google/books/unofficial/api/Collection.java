@@ -13,18 +13,43 @@ import net.htmlparser.jericho.LoggerProvider;
 import net.htmlparser.jericho.Segment;
 import net.htmlparser.jericho.Source;
 
+/**
+ * Class which represents the Google Book collection.
+ */
 public class Collection {
 	private final String feed = "http://books.google.com/books?rview=1&hl=en";
 	private CollectionCache<String,Book> cache;
 	
+	/**
+	 * Create a new instance of the Collection.
+	 * @post	The cache of the collection is set to a new instance of the
+	 * 			CollectionCache class with it's default cache limit.
+	 */
 	public Collection() {
-		cache = new CollectionCache<String,Book>();
+		this.cache = new CollectionCache<String,Book>();
 	}
 	
+	/**
+	 * Create a new instance of the Collection.
+	 * @param 	cacheLimit
+	 * 			The amount of books to keep in the cache of the collection
+	 * 			before discarding the oldest retrieval.
+	 * @post	The cache of the collection is set to a new instance of the
+	 * 			CollectionCache class with the given <cacheLimit> value as
+	 * 			it's cache limit.
+	 */
 	public Collection(int cacheLimit) {
-		cache = new CollectionCache<String,Book>(cacheLimit);
+		this.cache = new CollectionCache<String,Book>(cacheLimit);
 	}
 	
+	/**
+	 * Retrieve books from the collection.
+	 * @param 	query
+	 * 			The query which is used to find books in the collection.
+	 * @return	The books resulting from the execution of the query.
+	 * @throws 	IOException
+	 * @TODO	Remove IOException and add InvalidQueryException
+	 */
 	public ArrayList<Book> getBooks(String query) throws IOException {
 		query = query.replaceAll(" ", "+");
 		ArrayList<Book> result = new ArrayList<Book>();
@@ -67,7 +92,35 @@ public class Collection {
 		return result;
 	}
 	
+	/**
+	 * 
+	 * @param query
+	 * @param sYear
+	 * @param eYear
+	 * @return
+	 * @throws IOException
+	 */
+	public ArrayList<Book> getBooks(String query, int sYear, int eYear) throws IOException {
+		return getBooks(query+"+date:"+sYear+"-"+eYear);
+	}
+	
+	/**
+	 * 
+	 * @param book
+	 * @return
+	 * @throws IOException
+	 */
 	public ArrayList<Book> getRelatedBooks(Book book) throws IOException {
 		return getBooks("related:ISBN"+book.getISBN());
+	}
+	
+	/**
+	 * 
+	 * @param isbn
+	 * @return
+	 * @throws IOException
+	 */
+	public Book getBook(ISBN isbn) throws IOException {
+		return new Book(isbn);
 	}
 }
