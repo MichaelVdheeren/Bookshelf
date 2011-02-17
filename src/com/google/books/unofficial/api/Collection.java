@@ -6,6 +6,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import bookshelf.api.AbstractBook;
+import bookshelf.api.ISBN;
+
 import net.htmlparser.jericho.Config;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
@@ -81,8 +84,8 @@ public class Collection {
 				if (cache.containsKey(id))
 					book = cache.get(id);
 				else {
-					book = new Book(id);
-					cache.put(book.getId(), book);
+					book = new Book("http://books.google.com/books?id=" + id);
+					cache.put(id, book);
 				}
 				
 				result.add(book);
@@ -110,7 +113,7 @@ public class Collection {
 	 * @return
 	 * @throws IOException
 	 */
-	public ArrayList<Book> getRelatedBooks(Book book) throws IOException {
+	public ArrayList<Book> getRelatedBooks(AbstractBook book) throws IOException {
 		return getBooks("related:ISBN"+book.getISBN());
 	}
 	
@@ -120,7 +123,7 @@ public class Collection {
 	 * @return
 	 * @throws IOException
 	 */
-	public Book getBook(ISBN isbn) throws IOException {
+	public AbstractBook getBook(ISBN isbn) throws IOException {
 		return new Book(isbn);
 	}
 }

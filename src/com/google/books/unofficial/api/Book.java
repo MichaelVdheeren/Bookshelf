@@ -8,31 +8,24 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.books.unofficial.api.exceptions.InvalidISBNException;
-
 import net.htmlparser.jericho.Config;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.LoggerProvider;
 import net.htmlparser.jericho.Source;
+import bookshelf.api.AbstractBook;
+import bookshelf.api.ISBN;
 
-public class Book {
+
+public class Book extends AbstractBook {
 	private final Source source;
-	private final String id;
 	
 	private Image cover;
 	private URL coverUrl;
 	private String summary;
 	private float rating = -1f;
-	private ISBN isbn;
-	private String publisher;
-	private int publishingYear;
-	
-	private ArrayList<String> titles = new ArrayList<String>();
 	private ArrayList<String> subtitles = new ArrayList<String>();
 	private ArrayList<String> words = new ArrayList<String>();
-	private ArrayList<String> authors = new ArrayList<String>();
-	
 	private boolean cachedCover;
 	private boolean cachedCoverUrl;
 	private boolean cachedSummary;
@@ -42,13 +35,11 @@ public class Book {
 	private boolean cachedSubtitles;
 	private boolean cachedWords;
 	
-	public Book(String id) throws IOException {
-		this.id = id;
-		
+	public Book(String url) throws IOException {
 		Config.LoggerProvider=LoggerProvider.DISABLED;
 		
 		HttpURLConnection bookCon = (HttpURLConnection)
-				(new URL("http://books.google.com/books?id=" + id)).openConnection();
+				(new URL(url)).openConnection();
 		bookCon.addRequestProperty("User-Agent", "Mozilla/5.0");
 		this.source=new Source(bookCon);	
 	}
@@ -60,19 +51,6 @@ public class Book {
 				(new URL("http://books.google.com/books?isbn=" + isbn)).openConnection();
 		bookCon.addRequestProperty("User-Agent", "Mozilla/5.0");
 		this.source=new Source(bookCon);
-		
-		String url = bookCon.getURL().toString();
-		int beginId = url.indexOf("id=")+3;
-		int endId = beginId+url.substring(beginId).indexOf("&");
-		
-		if (endId < 0)
-			endId = url.length()-1;
-		
-		this.id = url.substring(beginId,endId);
-	}
-	
-	private void addTitle(String title) {
-		this.titles.add(title);
 	}
 	
 	private void addSubtitle(String subtitle) {
@@ -81,14 +59,6 @@ public class Book {
 	
 	private void addWords(String word) {
 		this.words.add(word);
-	}
-	
-	private void addAuthor(String author) {
-		this.authors.add(author);
-	}
-	
-	public String getId() {
-		return this.id;
 	}
 	
 	public Image getCover() throws IOException {
@@ -124,18 +94,18 @@ public class Book {
 		return this.summary;
 	}
 
-	public ArrayList<String> getTitles() {
+	public String getTitle() {
 		if (!hasCachedTitles()) {
 			List<Element> elements = source.getAllElementsByClass("booktitle");
 			for (Element e : elements) {
 				e = e.getFirstElement();
-				addTitle(e.getTextExtractor().setIncludeAttributes(false).toString());
+				setTitle(e.getTextExtractor().setIncludeAttributes(false).toString());
 			}
 			
 			setCachedTitles(true);
 		}
 		
-		return new ArrayList<String>(this.titles);
+		return this.title;
 	}
 
 	public ArrayList<String> getSubtitles() {
@@ -190,12 +160,7 @@ public class Book {
 			
 			if (label.equals("ISBN")) {
 				String[] isbns = metavalues.get(i).getTextExtractor().setIncludeAttributes(false).toString().split(", ");
-				try {
-					setISBN(new ISBN(isbns[0]));
-				} catch (InvalidISBNException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				setISBN(new ISBN(isbns[0]));
 			} else if (label.equals("Author") || label.equals("Authors")) {
 				List<Element> elements = metavalues.get(i).getAllElements(HTMLElementName.A);
 				for (Element e : elements)
@@ -297,24 +262,8 @@ public class Book {
 		this.rating = rating;
 	}
 	
-	private void setISBN(ISBN isbn) {
-		this.isbn = isbn;
-	}
-	
-	private void setPublisher(String publisher) {
-		this.publisher = publisher;
-	}
-	
-	private void setPublishingYear(int year) {
-		this.publishingYear = year;
-	}
-	
 	public boolean hasCover() throws IOException {
 		return (getCover() != null);
-	}
-	
-	public boolean hasTitles() {
-		return (getTitles().size() > 0);
 	}
 	
 	public boolean hasSubtitles() {
@@ -331,18 +280,6 @@ public class Book {
 	
 	public boolean hasWords() {
 		return (getWords().size() > 0);
-	}
-	
-	public boolean hasISBN() {
-		return (getISBN() != null);
-	}
-	
-	public boolean hasAuthors() {
-		return (getAuthors().size() > 0);
-	}
-	
-	public boolean hasPublisher() {
-		return (getPublisher() != null);
 	}
 	
 	private boolean hasCachedCover() {
@@ -386,19 +323,5 @@ public class Book {
 		setCachedTitles(false);
 		setCachedWords(false);
 		setCachedMetadata(false);
-	}
-	
-	@Override
-	public String toString() {
-		return this.id;
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof Book))
-			return false;
-		
-		Book b = (Book) o;
-		return getId().equals(b.getId());
 	}
 }

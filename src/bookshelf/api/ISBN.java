@@ -1,11 +1,8 @@
-package com.google.books.unofficial.api;
+package bookshelf.api;
 
-import com.google.books.unofficial.api.exceptions.InvalidISBNException;
 
 /**
  * Class representing an International Standard Book Number
- * @invar	The <value> of the ISBN should be valid.
- * 			| isValidISBN(value)
  */
 public class ISBN {
 	public final String value;
@@ -14,15 +11,11 @@ public class ISBN {
 	 * Create a new instance of the ISBN class
 	 * @param	value
 	 * 			The string representing an ISBN.
-	 * @throws 	InvalidISBNException
-	 * 			When the given <value> is not a valid ISBN.
 	 */
-	public ISBN(String value) throws InvalidISBNException {
+	public ISBN(String value) {
 		// Remove all dashes
 		value = value.replaceAll("-", "");
-		// Check if the given value is a valid isbn
-		if (!isValidISBN(value))
-			throw new InvalidISBNException(value);
+		value = value.trim();
 		
 		this.value = value;
 	}

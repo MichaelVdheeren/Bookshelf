@@ -1,7 +1,8 @@
 package com.google.books.unofficial.api.junit;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,10 +10,11 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 
+import bookshelf.api.AbstractBook;
+import bookshelf.api.ISBN;
+
 import com.google.books.unofficial.api.Book;
 import com.google.books.unofficial.api.Collection;
-import com.google.books.unofficial.api.ISBN;
-import com.google.books.unofficial.api.exceptions.InvalidISBNException;
 
 public class CollectionTest {
 	
@@ -28,10 +30,10 @@ public class CollectionTest {
 			ArrayList<Book> books = collection.getBooks("Blue Ocean Strategy");
 			
 			ArrayList<Book> expected = new ArrayList<Book>();
-			expected.add(new Book("BmPPAjGaDuQC"));
-			expected.add(new Book("8ZJbKqMsnWQC"));
-			expected.add(new Book("s2UO2Apy9ikC"));
-			expected.add(new Book("QQtCwQE4e-AC"));
+			expected.add(new Book("http://books.google.com/books?id=BmPPAjGaDuQC"));
+			expected.add(new Book("http://books.google.com/books?id=8ZJbKqMsnWQC"));
+			expected.add(new Book("http://books.google.com/books?id=s2UO2Apy9ikC"));
+			expected.add(new Book("http://books.google.com/books?id=QQtCwQE4e-AC"));
 			
 			assertTrue(books.containsAll(expected));
 		} catch (IOException e) {
@@ -42,13 +44,7 @@ public class CollectionTest {
 	
 	@Test
 	public void retrieveBookByISBN() throws IOException {
-		try {
-			Book book = collection.getBook(new ISBN("9781591396192"));
-			assertEquals("BmPPAjGaDuQC",book.getId());
-		} catch (InvalidISBNException e) {
-			System.out.println(e.getMessage());
-		}
-		
+		AbstractBook book = collection.getBook(new ISBN("9781591396192"));
+		assertEquals("Blue Ocean Strategy: How to Create Uncontested Market Space and Make Competition Irrelevant",book.getTitle());
 	}
-
 }

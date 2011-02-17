@@ -1,29 +1,26 @@
 package com.google.books.unofficial.api.junit;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.books.unofficial.api.Book;
+import bookshelf.api.AbstractBook;
+import bookshelf.api.ISBN;
+
 import com.google.books.unofficial.api.Collection;
-import com.google.books.unofficial.api.ISBN;
-import com.google.books.unofficial.api.exceptions.InvalidISBNException;
 
 public class BookTest {
 	
 	Collection collection = new Collection();
-	Book book;
+	AbstractBook book;
 
 	@Before
 	public void setUp() throws Exception {
-		try {
-			book = collection.getBook(new ISBN("9781591396192"));
-		} catch (InvalidISBNException e) {
-			System.out.println(e.getMessage());
-		}
+		book = collection.getBook(new ISBN("9781591396192"));
 	}
 	
 	@Test
@@ -41,11 +38,7 @@ public class BookTest {
 		int year = 2005;
 		assertEquals(book.getPublishingYear(), year);
 		
-		try {
-			ISBN isbn = new ISBN("1591396190");
-			assertEquals(isbn, book.getISBN());
-		} catch (InvalidISBNException e) {
-			System.out.println(e.getMessage());
-		}
+		ISBN isbn = new ISBN("1591396190");
+		assertEquals(isbn, book.getISBN());
 	}
 }

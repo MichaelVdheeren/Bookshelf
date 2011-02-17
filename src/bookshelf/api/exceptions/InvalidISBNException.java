@@ -1,4 +1,4 @@
-package com.google.books.unofficial.api.exceptions;
+package bookshelf.api.exceptions;
 
 public class InvalidISBNException extends Exception {
 	private static final long serialVersionUID = 1L;
