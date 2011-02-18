@@ -13,7 +13,7 @@ import bookshelf.ISBN;
 import bookshelf.apis.libis.LibisBookshelf;
 
 
-public class BookTest {
+public class LibisBookTest {
 	
 	LibisBookshelf collection = new LibisBookshelf("SG4JHVPDF9CHC5V9D2XQE4Y6278V1KFUCFDRDV6UGY7J9R76MA-25544");
 	ArrayList<AbstractBook> books;

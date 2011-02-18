@@ -2,7 +2,7 @@ package bookshelf.apis.libis.parameters;
 
 import bookshelf.IParameter;
 
-public enum Type implements IParameter {
+public enum LibisType implements IParameter {
 	All (""),
 	Boeken ("(BK OR books) NOT (Theses OR Articles OR Chapters)"),
 	Tijdschriften ("(SE OR journals)"),
@@ -13,7 +13,7 @@ public enum Type implements IParameter {
 	
     private final String value;
     
-    Type(String value) {
+    LibisType(String value) {
         this.value = value;
     }
 

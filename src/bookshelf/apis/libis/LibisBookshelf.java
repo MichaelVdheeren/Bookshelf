@@ -14,9 +14,9 @@ import net.htmlparser.jericho.Source;
 import bookshelf.AbstractBook;
 import bookshelf.AbstractBookshelf;
 import bookshelf.BookshelfCache;
-import bookshelf.apis.libis.parameters.Catalogue;
-import bookshelf.apis.libis.parameters.Library;
-import bookshelf.apis.libis.parameters.Type;
+import bookshelf.apis.libis.parameters.LibisCatalogue;
+import bookshelf.apis.libis.parameters.LibisLibrary;
+import bookshelf.apis.libis.parameters.LibisType;
 
 /**
  * Class which represents the Libis Book collection.
@@ -24,9 +24,9 @@ import bookshelf.apis.libis.parameters.Type;
 public class LibisBookshelf extends AbstractBookshelf {
 	private final String key;
 	private final String feed = "http://opac.libis.be:80/F/";
-	private Catalogue catalogue = Catalogue.All;
-	private Library library = Library.All;
-	private Type type = Type.All;
+	private LibisCatalogue catalogue = LibisCatalogue.All;
+	private LibisLibrary library = LibisLibrary.All;
+	private LibisType type = LibisType.All;
 	
 	/**
 	 * Create a new instance of the Collection.
@@ -133,27 +133,27 @@ public class LibisBookshelf extends AbstractBookshelf {
 		return result;
 	}
 
-	public Catalogue getCatalogue() {
+	public LibisCatalogue getCatalogue() {
 		return this.catalogue;
 	}
 	
-	public void setCatalogue(Catalogue catalogue) {
+	public void setCatalogue(LibisCatalogue catalogue) {
 		this.catalogue = catalogue;
 	}
 
-	public Library getLibrary() {
+	public LibisLibrary getLibrary() {
 		return library;
 	}
 
-	public void setLibrary(Library library) {
+	public void setLibrary(LibisLibrary library) {
 		this.library = library;
 	}
 
-	public Type getType() {
+	public LibisType getType() {
 		return type;
 	}
 
-	public void setType(Type type) {
+	public void setType(LibisType type) {
 		this.type = type;
 	}
 

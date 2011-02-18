@@ -2,13 +2,13 @@ package bookshelf.apis.google.parameters;
 
 import bookshelf.IParameter;
 
-public enum Language implements IParameter {
+public enum GoogleLanguage implements IParameter {
 	Nederlands ("nl"),
     English   ("en");
 
     private final String value;
     
-    Language(String value) {
+    GoogleLanguage(String value) {
         this.value = value;
     }
     

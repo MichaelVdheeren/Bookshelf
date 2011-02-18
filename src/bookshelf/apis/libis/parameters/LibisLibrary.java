@@ -2,7 +2,7 @@ package bookshelf.apis.libis.parameters;
 
 import bookshelf.IParameter;
 
-public enum Library implements IParameter {
+public enum LibisLibrary implements IParameter {
 	All (""),
 	ACV_CSC ("ACV OR EACV"),
 	Abdij_van_Park ("GPAR"),
@@ -90,7 +90,7 @@ public enum Library implements IParameter {
 	
     private final String value;
     
-    Library(String value) {
+    LibisLibrary(String value) {
         this.value = value;
     }
 

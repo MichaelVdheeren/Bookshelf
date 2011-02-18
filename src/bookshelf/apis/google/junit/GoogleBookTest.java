@@ -13,7 +13,7 @@ import bookshelf.ISBN;
 import bookshelf.apis.google.GoogleBookshelf;
 
 
-public class BookTest {
+public class GoogleBookTest {
 	
 	GoogleBookshelf collection = new GoogleBookshelf();
 	AbstractBook book;

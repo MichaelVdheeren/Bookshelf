@@ -2,7 +2,7 @@ package bookshelf.apis.libis.parameters;
 
 import bookshelf.IParameter;
 
-public enum Catalogue implements IParameter {
+public enum LibisCatalogue implements IParameter {
 	All ("OPAC01"),
 	ACV ("ACV"),
 	Academia_Belgica ("AB"),
@@ -38,7 +38,7 @@ public enum Catalogue implements IParameter {
 
     private final String value;
     
-    Catalogue(String value) {
+    LibisCatalogue(String value) {
         this.value = value;
     }
 

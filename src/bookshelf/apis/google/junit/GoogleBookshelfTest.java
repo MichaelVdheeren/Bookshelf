@@ -16,7 +16,7 @@ import bookshelf.apis.google.GoogleBook;
 import bookshelf.apis.google.GoogleBookshelf;
 
 
-public class CollectionTest {
+public class GoogleBookshelfTest {
 	
 	GoogleBookshelf collection = new GoogleBookshelf();
 
