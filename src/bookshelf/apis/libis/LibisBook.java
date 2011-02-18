@@ -1,23 +1,22 @@
-package be.libis.opac.unofficial.api;
+package bookshelf.apis.libis;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import net.htmlparser.jericho.Config;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.LoggerProvider;
 import net.htmlparser.jericho.Source;
-import bookshelf.api.AbstractBook;
-import bookshelf.api.ISBN;
+import bookshelf.AbstractBook;
+import bookshelf.ISBN;
 
-public class Book extends AbstractBook {
+public class LibisBook extends AbstractBook {
 	private final Source source;
 	private String id;
 	
-	public Book(String url) throws IOException {
+	public LibisBook(String url) throws IOException {
 		Config.LoggerProvider=LoggerProvider.DISABLED;
 		
 		HttpURLConnection bookCon = (HttpURLConnection)
@@ -57,58 +56,11 @@ public class Book extends AbstractBook {
 	}
 	
 	@Override
-	public ISBN getISBN() {
-		return this.isbn;
-	}
-	
-	@Override
-	public ArrayList<String> getAuthors() {
-		return new ArrayList<String>(this.authors);
-	}
-	
-	@Override
-	public String getTitle() {
-		return this.title;
-	}
-	
-	@Override
-	public String getPublisher() {
-		return this.publisher;
-	}
-	
-	@Override
-	public int getPublishingYear() {
-		return this.publishingYear;
-	}
-	
-	public boolean hasTitles() {
-		return (getTitle() != null);
-	}
-	
-	public boolean hasISBN() {
-		return (getISBN() != null);
-	}
-	
-	public boolean hasAuthors() {
-		return (getAuthors().size() > 0);
-	}
-	
-	@Override
-	public boolean hasPublisher() {
-		return (getPublisher() != null);
-	}
-	
-	@Override
-	public String toString() {
-		return this.id;
-	}
-	
-	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof Book))
+		if (!(o instanceof LibisBook))
 			return false;
 		
-		Book b = (Book) o;
+		LibisBook b = (LibisBook) o;
 		return getId().equals(b.getId());
 	}
 }

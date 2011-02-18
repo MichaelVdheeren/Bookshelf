@@ -1,4 +1,4 @@
-package com.google.books.unofficial.api.junit;
+package bookshelf.apis.google.junit;
 
 
 import static org.junit.Assert.assertEquals;
@@ -10,15 +10,15 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 
-import bookshelf.api.AbstractBook;
-import bookshelf.api.ISBN;
+import bookshelf.AbstractBook;
+import bookshelf.ISBN;
+import bookshelf.apis.google.GoogleBook;
+import bookshelf.apis.google.GoogleBookshelf;
 
-import com.google.books.unofficial.api.Book;
-import com.google.books.unofficial.api.Collection;
 
 public class CollectionTest {
 	
-	Collection collection = new Collection();
+	GoogleBookshelf collection = new GoogleBookshelf();
 
 	@Before
 	public void setUp() throws Exception {
@@ -27,13 +27,13 @@ public class CollectionTest {
 	@Test
 	public void retrieveBooksByQuery() {
 		try {
-			ArrayList<Book> books = collection.getBooks("Blue Ocean Strategy");
+			ArrayList<AbstractBook> books = collection.getBooks("Blue Ocean Strategy");
 			
-			ArrayList<Book> expected = new ArrayList<Book>();
-			expected.add(new Book("http://books.google.com/books?id=BmPPAjGaDuQC"));
-			expected.add(new Book("http://books.google.com/books?id=8ZJbKqMsnWQC"));
-			expected.add(new Book("http://books.google.com/books?id=s2UO2Apy9ikC"));
-			expected.add(new Book("http://books.google.com/books?id=QQtCwQE4e-AC"));
+			ArrayList<GoogleBook> expected = new ArrayList<GoogleBook>();
+			expected.add(new GoogleBook("http://books.google.com/books?id=BmPPAjGaDuQC"));
+			expected.add(new GoogleBook("http://books.google.com/books?id=8ZJbKqMsnWQC"));
+			expected.add(new GoogleBook("http://books.google.com/books?id=s2UO2Apy9ikC"));
+			expected.add(new GoogleBook("http://books.google.com/books?id=QQtCwQE4e-AC"));
 			
 			assertTrue(books.containsAll(expected));
 		} catch (IOException e) {

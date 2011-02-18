@@ -1,4 +1,4 @@
-package com.google.books.unofficial.api;
+package bookshelf.apis.google;
 
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -13,11 +13,11 @@ import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.LoggerProvider;
 import net.htmlparser.jericho.Source;
-import bookshelf.api.AbstractBook;
-import bookshelf.api.ISBN;
+import bookshelf.AbstractBook;
+import bookshelf.ISBN;
 
 
-public class Book extends AbstractBook {
+public class GoogleBook extends AbstractBook {
 	private final Source source;
 	
 	private Image cover;
@@ -35,16 +35,16 @@ public class Book extends AbstractBook {
 	private boolean cachedSubtitles;
 	private boolean cachedWords;
 	
-	public Book(String url) throws IOException {
+	public GoogleBook(String url) throws IOException {
 		Config.LoggerProvider=LoggerProvider.DISABLED;
 		
 		HttpURLConnection bookCon = (HttpURLConnection)
 				(new URL(url)).openConnection();
 		bookCon.addRequestProperty("User-Agent", "Mozilla/5.0");
-		this.source=new Source(bookCon);	
+		this.source=new Source(bookCon);
 	}
 	
-	public Book(ISBN isbn) throws IOException {
+	public GoogleBook(ISBN isbn) throws IOException {
 		Config.LoggerProvider=LoggerProvider.DISABLED;
 		
 		HttpURLConnection bookCon = (HttpURLConnection)

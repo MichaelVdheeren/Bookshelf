@@ -1,6 +1,8 @@
-package be.libis.opac.unofficial.api;
+package bookshelf.apis.libis.parameters;
 
-public enum Library {
+import bookshelf.IParameter;
+
+public enum Library implements IParameter {
 	All (""),
 	ACV_CSC ("ACV OR EACV"),
 	Abdij_van_Park ("GPAR"),
@@ -94,4 +96,5 @@ public enum Library {
 
     public String getName() { return "request_filter_5"; }
     public String getValue()  { return this.value; }
+    public String toString() { return getName()+"="+getValue(); }
 }

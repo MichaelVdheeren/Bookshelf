@@ -1,6 +1,9 @@
-package be.libis.opac.unofficial.api;
+package bookshelf.apis.libis.parameters;
 
-public enum Catalogue {
+import bookshelf.IParameter;
+
+public enum Catalogue implements IParameter {
+	All ("OPAC01"),
 	ACV ("ACV"),
 	Academia_Belgica ("AB"),
 	Belgisch_Parlement ("BPB"),
@@ -41,4 +44,5 @@ public enum Catalogue {
 
     public String getName() { return "local_base"; }
     public String getValue()  { return this.value; }
+    public String toString() { return getName()+"="+getValue(); }
 }

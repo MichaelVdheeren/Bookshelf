@@ -1,6 +1,8 @@
-package be.libis.opac.unofficial.api;
+package bookshelf.apis.libis.parameters;
 
-public enum Type {
+import bookshelf.IParameter;
+
+public enum Type implements IParameter {
 	All (""),
 	Boeken ("(BK OR books) NOT (Theses OR Articles OR Chapters)"),
 	Tijdschriften ("(SE OR journals)"),
@@ -17,4 +19,5 @@ public enum Type {
 
     public String getName() { return "request_filter_4"; }
     public String getValue()  { return this.value; }
+    public String toString() { return getName()+"="+getValue(); }
 }

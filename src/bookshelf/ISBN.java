@@ -1,4 +1,4 @@
-package bookshelf.api;
+package bookshelf;
 
 
 /**

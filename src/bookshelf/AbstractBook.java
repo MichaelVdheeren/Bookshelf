@@ -1,8 +1,8 @@
-package bookshelf.api;
+package bookshelf;
 
 import java.util.ArrayList;
 
-import com.google.books.unofficial.api.Book;
+import bookshelf.apis.google.GoogleBook;
 
 public abstract class AbstractBook {
 
@@ -11,24 +11,25 @@ public abstract class AbstractBook {
 	protected int publishingYear;
 	protected String title;
 	protected ArrayList<String> authors = new ArrayList<String>();
+	
+	public ISBN getISBN() {
+		return this.isbn;
+	}
 
-	public abstract int getPublishingYear();
+	public ArrayList<String> getAuthors() {
+		return this.authors;
+	}
 
-	public abstract String getPublisher();
+	public String getTitle() {
+		return this.title;
+	}
 
-	public abstract String getTitle();
+	public String getPublisher() {
+		return this.publisher;
+	}
 
-	public abstract ArrayList<String> getAuthors();
-
-	public abstract ISBN getISBN();
-
-	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof Book))
-			return false;
-		
-		AbstractBook b = (AbstractBook) o;
-		return getISBN().equals(b.getISBN());
+	public int getPublishingYear() {
+		return this.publishingYear;
 	}
 
 	protected void setTitle(String title) {
@@ -66,5 +67,12 @@ public abstract class AbstractBook {
 	protected void addAuthor(String author) {
 		this.authors.add(author);
 	}
-
+	
+	public boolean equals(Object o) {
+		if (!(o instanceof GoogleBook))
+			return false;
+		
+		AbstractBook b = (AbstractBook) o;
+		return getISBN().equals(b.getISBN());
+	}
 }

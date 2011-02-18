@@ -1,4 +1,4 @@
-package com.google.books.unofficial.api.junit;
+package bookshelf.apis.google.junit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -8,14 +8,14 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 
-import bookshelf.api.AbstractBook;
-import bookshelf.api.ISBN;
+import bookshelf.AbstractBook;
+import bookshelf.ISBN;
+import bookshelf.apis.google.GoogleBookshelf;
 
-import com.google.books.unofficial.api.Collection;
 
 public class BookTest {
 	
-	Collection collection = new Collection();
+	GoogleBookshelf collection = new GoogleBookshelf();
 	AbstractBook book;
 
 	@Before
