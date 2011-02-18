@@ -1,6 +1,6 @@
 package bookshelf.apis.libis.parameters;
 
-import bookshelf.IParameter;
+import bookshelf.parameters.IParameter;
 
 public enum LibisLibrary implements IParameter {
 	All (""),

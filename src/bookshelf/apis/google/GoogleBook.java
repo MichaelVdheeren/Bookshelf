@@ -8,10 +8,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.htmlparser.jericho.Config;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
-import net.htmlparser.jericho.LoggerProvider;
 import net.htmlparser.jericho.Source;
 import bookshelf.AbstractBook;
 import bookshelf.ISBN;
@@ -36,8 +34,6 @@ public class GoogleBook extends AbstractBook {
 	private boolean cachedWords;
 	
 	public GoogleBook(String url) throws IOException {
-		Config.LoggerProvider=LoggerProvider.DISABLED;
-		
 		HttpURLConnection bookCon = (HttpURLConnection)
 				(new URL(url)).openConnection();
 		bookCon.addRequestProperty("User-Agent", "Mozilla/5.0");
@@ -45,12 +41,7 @@ public class GoogleBook extends AbstractBook {
 	}
 	
 	public GoogleBook(ISBN isbn) throws IOException {
-		Config.LoggerProvider=LoggerProvider.DISABLED;
-		
-		HttpURLConnection bookCon = (HttpURLConnection)
-				(new URL("http://books.google.com/books?isbn=" + isbn)).openConnection();
-		bookCon.addRequestProperty("User-Agent", "Mozilla/5.0");
-		this.source=new Source(bookCon);
+		this("http://books.google.com/books?isbn=" + isbn);
 	}
 	
 	private void addSubtitle(String subtitle) {

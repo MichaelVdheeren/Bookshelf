@@ -1,4 +1,4 @@
-package bookshelf;
+package bookshelf.parameters;
 
 public interface IParameter {
     public String getName();

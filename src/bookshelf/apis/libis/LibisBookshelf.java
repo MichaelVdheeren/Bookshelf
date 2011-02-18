@@ -14,9 +14,13 @@ import net.htmlparser.jericho.Source;
 import bookshelf.AbstractBook;
 import bookshelf.AbstractBookshelf;
 import bookshelf.BookshelfCache;
+import bookshelf.ISBN;
 import bookshelf.apis.libis.parameters.LibisCatalogue;
 import bookshelf.apis.libis.parameters.LibisLibrary;
+import bookshelf.apis.libis.parameters.LibisSearchfield;
 import bookshelf.apis.libis.parameters.LibisType;
+import bookshelf.exceptions.BookNotFoundException;
+import bookshelf.exceptions.BookshelfUnavailableException;
 
 /**
  * Class which represents the Libis Book collection.
@@ -27,6 +31,7 @@ public class LibisBookshelf extends AbstractBookshelf {
 	private LibisCatalogue catalogue = LibisCatalogue.All;
 	private LibisLibrary library = LibisLibrary.All;
 	private LibisType type = LibisType.All;
+	private LibisSearchfield searchfield = LibisSearchfield.All;
 	
 	/**
 	 * Create a new instance of the Collection.
@@ -95,23 +100,30 @@ public class LibisBookshelf extends AbstractBookshelf {
 		return result;
 	}
 	
-	public ArrayList<AbstractBook> getBooks(String query) throws IOException {	
+	@Override
+	public ArrayList<AbstractBook> getBooks(String query) throws BookshelfUnavailableException {	
 		ArrayList<AbstractBook> result = new ArrayList<AbstractBook>();
 		
 		String feed;
 		feed = getFeed() + getKey();
-		feed += "?func=find-c";
+		feed += "?func=find-b";
+		feed += "&" + getSearchfield().toString();
 		feed += "&" + getCatalogue().toString();
 		feed += "&" + getLibrary().toString();
 		feed += "&" + getType().toString();
 		feed += "&request=" + query;
 		
-		URL feedUrl = new URL(feed);
+		Source source = null;
+		try {
+			URL feedUrl = new URL(feed);
 		
-		HttpURLConnection feedCon = (HttpURLConnection) feedUrl.openConnection(); 
-		feedCon.addRequestProperty("User-Agent", "Safari/5.0");
-		
-		Source source=new Source(feedCon);
+			HttpURLConnection feedCon = (HttpURLConnection) feedUrl.openConnection(); 
+			feedCon.addRequestProperty("User-Agent", "Safari/5.0");
+			
+			source=new Source(feedCon);
+		} catch (IOException e) {
+			throw new BookshelfUnavailableException();
+		}
 		
 		List<Element> elements = source.getAllElementsByClass("lbs_td1");
 		Iterator<Element> iterator = elements.iterator();
@@ -124,13 +136,27 @@ public class LibisBookshelf extends AbstractBookshelf {
 				continue;
 			
 			String url = a.getAttributeValue("href");
-			
-			if (url.startsWith("http") && url.indexOf("set_entry") >= 0) {
-				result.add(new LibisBook(url));
+			try {
+				if (url.startsWith("http") && url.indexOf("set_entry") >= 0) {
+					result.add(new LibisBook(url));
+				}
+			} catch (IOException e) {
+				continue;
 			}
 		}
 		
 		return result;
+	}
+	
+	public AbstractBook getBook(ISBN isbn) throws BookNotFoundException, BookshelfUnavailableException {
+		LibisSearchfield searchfield = getSearchfield();
+		ArrayList<AbstractBook> result = getBooks(isbn.toString());
+		setSearchfield(searchfield);
+		
+		if (result.size() <= 0)
+			throw new BookNotFoundException();
+		
+		return result.get(0);
 	}
 
 	public LibisCatalogue getCatalogue() {
@@ -147,6 +173,14 @@ public class LibisBookshelf extends AbstractBookshelf {
 
 	public void setLibrary(LibisLibrary library) {
 		this.library = library;
+	}
+	
+	public LibisSearchfield getSearchfield() {
+		return searchfield;
+	}
+	
+	public void setSearchfield(LibisSearchfield searchfield) {
+		this.searchfield = searchfield;
 	}
 
 	public LibisType getType() {

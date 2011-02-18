@@ -13,6 +13,9 @@ import bookshelf.AbstractBook;
 import bookshelf.AbstractBookshelf;
 import bookshelf.BookshelfCache;
 import bookshelf.ISBN;
+import bookshelf.apis.google.parameters.GoogleLanguage;
+import bookshelf.exceptions.BookNotFoundException;
+import bookshelf.exceptions.BookshelfUnavailableException;
 
 /**
  * Class which represents the Google Book collection.
@@ -39,23 +42,27 @@ public class GoogleBookshelf extends AbstractBookshelf {
 		super(cache);
 	}
 	
-	/**
-	 * Retrieve books from the collection.
-	 * @param 	query
-	 * 			The query which is used to find books in the collection.
-	 * @return	The books resulting from the execution of the query.
-	 * @throws 	IOException
-	 * @TODO	Remove IOException and add InvalidQueryException
-	 */
-	public ArrayList<AbstractBook> getBooks(String query) throws IOException {
+	public ArrayList<AbstractBook> getBooks(String query) throws BookshelfUnavailableException {
 		query = query.replaceAll(" ", "+");
 		ArrayList<AbstractBook> result = new ArrayList<AbstractBook>();
 		
-		URL feedUrl = new URL(feed + "&q=" + query);
-		HttpURLConnection feedCon = (HttpURLConnection) feedUrl.openConnection(); 
-		feedCon.addRequestProperty("User-Agent", "Safari/5.0");
+		String feed;
+		feed = getFeed();
+		feed += "?rview=1";
+		feed += "&" + GoogleLanguage.English;
+		feed += "&q=" + query;
+
+		Source source = null;
+		try {
+			URL feedUrl = new URL(feed);
 		
-		Source source=new Source(feedCon);
+			HttpURLConnection feedCon = (HttpURLConnection) feedUrl.openConnection(); 
+			feedCon.addRequestProperty("User-Agent", "Safari/5.0");
+			
+			source=new Source(feedCon);
+		} catch (IOException e) {
+			throw new BookshelfUnavailableException();
+		}
 		
 		List<Element> urls = source.getElementById("main_content").getAllElements(HTMLElementName.A);
 		
@@ -68,16 +75,20 @@ public class GoogleBookshelf extends AbstractBookshelf {
 				endId = url.length()-1;
 			
 			String id = url.substring(beginId,endId);
-			AbstractBook book;
 			
-			if (getCache().containsKey(id))
-				book = getCache().get(id);
-			else {
-				book = new GoogleBook("http://books.google.com/books?id=" + id);
-				getCache().put(book.getISBN(), book);
+			try {
+				AbstractBook book;
+				if (getCache().containsKey(id))
+					book = getCache().get(id);
+				else {
+					book = new GoogleBook("http://books.google.com/books?id=" + id);
+					getCache().put(book.getISBN(), book);
+				}
+			
+				result.add(book);
+			} catch (IOException e) {
+				continue;
 			}
-			
-			result.add(book);
 		}
 		
 		return result;
@@ -90,8 +101,9 @@ public class GoogleBookshelf extends AbstractBookshelf {
 	 * @param eYear
 	 * @return
 	 * @throws IOException
+	 * @throws BookshelfUnavailableException 
 	 */
-	public ArrayList<AbstractBook> getBooks(String query, int sYear, int eYear) throws IOException {
+	public ArrayList<AbstractBook> getBooks(String query, int sYear, int eYear) throws BookshelfUnavailableException {
 		return getBooks(query+"+date:"+sYear+"-"+eYear);
 	}
 	
@@ -100,8 +112,9 @@ public class GoogleBookshelf extends AbstractBookshelf {
 	 * @param book
 	 * @return
 	 * @throws IOException
+	 * @throws BookshelfUnavailableException 
 	 */
-	public ArrayList<AbstractBook> getRelatedBooks(AbstractBook book) throws IOException {
+	public ArrayList<AbstractBook> getRelatedBooks(AbstractBook book) throws BookshelfUnavailableException {
 		return getBooks("related:ISBN"+book.getISBN());
 	}
 	
@@ -109,9 +122,18 @@ public class GoogleBookshelf extends AbstractBookshelf {
 	 * 
 	 * @param isbn
 	 * @return
+	 * @throws BookNotFoundException 
 	 * @throws IOException
 	 */
-	public AbstractBook getBook(ISBN isbn) throws IOException {
-		return new GoogleBook(isbn);
+	public AbstractBook getBook(ISBN isbn) throws BookNotFoundException {
+		try {
+			return new GoogleBook(isbn);
+		} catch (IOException e) {
+			throw new BookNotFoundException();
+		}
+	}
+	
+	public String getFeed() {
+		return feed;
 	}
 }

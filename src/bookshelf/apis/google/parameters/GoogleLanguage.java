@@ -1,6 +1,6 @@
 package bookshelf.apis.google.parameters;
 
-import bookshelf.IParameter;
+import bookshelf.parameters.IParameter;
 
 public enum GoogleLanguage implements IParameter {
 	Nederlands ("nl"),

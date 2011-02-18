@@ -1,7 +1,6 @@
 package bookshelf.apis.libis.junit;
 
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import org.junit.Before;
@@ -9,6 +8,7 @@ import org.junit.Test;
 
 import bookshelf.AbstractBook;
 import bookshelf.apis.libis.LibisBookshelf;
+import bookshelf.exceptions.BookshelfUnavailableException;
 
 
 public class LibisBookshelfTest {
@@ -21,7 +21,12 @@ public class LibisBookshelfTest {
 	
 	
 	@Test
-	public void retrieveBookByBarcode() throws IOException {
+	public void retrieveBookByBarcode() throws BookshelfUnavailableException {
 		ArrayList<AbstractBook> books = collection.getBooks("009906485");
+	}
+	
+	@Test
+	public void retrieveBookByISBN() {
+		//978-0-470-39880-7
 	}
 }
