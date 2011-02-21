@@ -150,6 +150,7 @@ public class LibisBookshelf extends AbstractBookshelf {
 	
 	public AbstractBook getBook(ISBN isbn) throws BookNotFoundException, BookshelfUnavailableException {
 		LibisSearchfield searchfield = getSearchfield();
+		setSearchfield(LibisSearchfield.ISBN);
 		ArrayList<AbstractBook> result = getBooks(isbn.toString());
 		setSearchfield(searchfield);
 		

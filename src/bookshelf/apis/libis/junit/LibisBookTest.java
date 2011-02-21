@@ -10,17 +10,18 @@ import org.junit.Test;
 
 import bookshelf.AbstractBook;
 import bookshelf.ISBN;
+import bookshelf.apis.libis.LibisBarcode;
 import bookshelf.apis.libis.LibisBookshelf;
 
 
 public class LibisBookTest {
 	
-	LibisBookshelf collection = new LibisBookshelf("SG4JHVPDF9CHC5V9D2XQE4Y6278V1KFUCFDRDV6UGY7J9R76MA-25544");
+	LibisBookshelf collection = new LibisBookshelf("M2C2TCIPDX1V129V7LE6KQIMD2XY4J1VDTG6AMECHAF822C4P1-04986");
 	ArrayList<AbstractBook> books;
 
 	@Before
 	public void setUp() throws Exception {
-		books = collection.getBooks("009906485");
+		books = collection.getBooks(new LibisBarcode("009906485"));
 	}
 	
 	@Test
