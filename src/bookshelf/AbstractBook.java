@@ -2,8 +2,6 @@ package bookshelf;
 
 import java.util.ArrayList;
 
-import bookshelf.apis.google.GoogleBook;
-
 public abstract class AbstractBook {
 
 	protected ISBN isbn;
@@ -69,7 +67,7 @@ public abstract class AbstractBook {
 	}
 	
 	public boolean equals(Object o) {
-		if (!(o instanceof GoogleBook))
+		if (!(o instanceof AbstractBook))
 			return false;
 		
 		AbstractBook b = (AbstractBook) o;

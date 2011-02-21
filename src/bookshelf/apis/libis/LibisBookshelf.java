@@ -62,9 +62,7 @@ public class LibisBookshelf extends AbstractBookshelf {
 		this.key = key;
 	}
 	
-	public ArrayList<AbstractBook> getBooks(LibisBarcode barcode) throws IOException {	
-		ArrayList<AbstractBook> result = new ArrayList<AbstractBook>();
-		
+	public ArrayList<AbstractBook> getBooks(LibisBarcode barcode) throws BookshelfUnavailableException {	
 		String feed;
 		feed = getFeed() + getKey();
 		feed += "?func=find-c";
@@ -73,36 +71,11 @@ public class LibisBookshelf extends AbstractBookshelf {
 		feed += "&" + getType().toString();
 		feed += "&ccl_term=BAR=" + barcode;
 		
-		URL feedUrl = new URL(feed);
-		
-		HttpURLConnection feedCon = (HttpURLConnection) feedUrl.openConnection(); 
-		feedCon.addRequestProperty("User-Agent", "Safari/5.0");
-		
-		Source source=new Source(feedCon);
-		
-		List<Element> elements = source.getAllElementsByClass("lbs_td1");
-		Iterator<Element> iterator = elements.iterator();
-		
-		while (iterator.hasNext()) {
-			Segment content = iterator.next().getContent();
-			Element a = content.getFirstElement(HTMLElementName.A);
-			
-			if (a == null)
-				continue;
-			
-			String url = a.getAttributeValue("href");
-			
-			if (url.startsWith("http") && url.indexOf("set_entry") >= 0) {
-				result.add(new LibisBook(url));
-			}
-		}
-		
-		return result;
+		return processFeed(feed);
 	}
 	
 	@Override
 	public ArrayList<AbstractBook> getBooks(String query) throws BookshelfUnavailableException {	
-		ArrayList<AbstractBook> result = new ArrayList<AbstractBook>();
 		
 		String feed;
 		feed = getFeed() + getKey();
@@ -113,39 +86,7 @@ public class LibisBookshelf extends AbstractBookshelf {
 		feed += "&" + getType().toString();
 		feed += "&request=" + query;
 		
-		Source source = null;
-		try {
-			URL feedUrl = new URL(feed);
-		
-			HttpURLConnection feedCon = (HttpURLConnection) feedUrl.openConnection(); 
-			feedCon.addRequestProperty("User-Agent", "Safari/5.0");
-			
-			source=new Source(feedCon);
-		} catch (IOException e) {
-			throw new BookshelfUnavailableException();
-		}
-		
-		List<Element> elements = source.getAllElementsByClass("lbs_td1");
-		Iterator<Element> iterator = elements.iterator();
-		
-		while (iterator.hasNext()) {
-			Segment content = iterator.next().getContent();
-			Element a = content.getFirstElement(HTMLElementName.A);
-			
-			if (a == null)
-				continue;
-			
-			String url = a.getAttributeValue("href");
-			try {
-				if (url.startsWith("http") && url.indexOf("set_entry") >= 0) {
-					result.add(new LibisBook(url));
-				}
-			} catch (IOException e) {
-				continue;
-			}
-		}
-		
-		return result;
+		return processFeed(feed);
 	}
 	
 	public AbstractBook getBook(ISBN isbn) throws BookNotFoundException, BookshelfUnavailableException {
@@ -158,6 +99,44 @@ public class LibisBookshelf extends AbstractBookshelf {
 			throw new BookNotFoundException();
 		
 		return result.get(0);
+	}
+	
+	private ArrayList<AbstractBook> processFeed(String feed) throws BookshelfUnavailableException {
+		ArrayList<AbstractBook> result = new ArrayList<AbstractBook>();		
+		Source source = null;
+		try {
+			URL feedUrl = new URL(feed);
+		
+			HttpURLConnection feedCon = (HttpURLConnection) feedUrl.openConnection(); 
+			feedCon.addRequestProperty("User-Agent", "Safari/5.0");
+			
+			source=new Source(feedCon);
+		} catch (IOException e) {
+			throw new BookshelfUnavailableException();
+		}
+		
+		Element iframe = source.getElementById("ShelfNumberShim");
+		Element tbody = source.getNextElement(iframe.getEnd()).getFirstElement();
+		
+		List<Element> trs = tbody.getChildElements();
+		Iterator<Element> iterator = trs.iterator();
+		
+		while (iterator.hasNext()) {
+			Segment content = iterator.next().getContent();
+			Element a = content.getFirstElement(HTMLElementName.A);
+			
+			if (a == null)
+				continue;
+			
+			String url = a.getAttributeValue("href");
+			try {
+				result.add(new LibisBook(url));
+			} catch (IOException e) {
+				// TODO: just skip
+			}
+		}
+		
+		return result;
 	}
 
 	public LibisCatalogue getCatalogue() {

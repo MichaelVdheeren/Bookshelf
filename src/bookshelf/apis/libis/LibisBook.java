@@ -14,7 +14,6 @@ import bookshelf.ISBN;
 
 public class LibisBook extends AbstractBook {
 	private final Source source;
-	private String id;
 	
 	public LibisBook(String url) throws IOException {
 		Config.LoggerProvider=LoggerProvider.DISABLED;
@@ -49,18 +48,5 @@ public class LibisBook extends AbstractBook {
 				setPublisher(value.replaceAll("^.* : ", ""));
 			}
 		}
-	}
-	
-	public String getId() {
-		return this.id;
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof LibisBook))
-			return false;
-		
-		LibisBook b = (LibisBook) o;
-		return getId().equals(b.getId());
 	}
 }

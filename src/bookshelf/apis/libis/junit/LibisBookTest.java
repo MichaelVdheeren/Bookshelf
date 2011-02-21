@@ -15,8 +15,8 @@ import bookshelf.apis.libis.LibisBookshelf;
 
 
 public class LibisBookTest {
-	
-	LibisBookshelf collection = new LibisBookshelf("M2C2TCIPDX1V129V7LE6KQIMD2XY4J1VDTG6AMECHAF822C4P1-04986");
+	String key = "YIRIIK92UHUVH99AHUDAQXNNR1F24D6U3XD5U65RHNRULMK3GC-08666";
+	LibisBookshelf collection = new LibisBookshelf(key);
 	ArrayList<AbstractBook> books;
 
 	@Before
