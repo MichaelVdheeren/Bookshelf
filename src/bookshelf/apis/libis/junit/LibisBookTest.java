@@ -3,8 +3,6 @@ package bookshelf.apis.libis.junit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,17 +15,15 @@ import bookshelf.apis.libis.LibisBookshelf;
 public class LibisBookTest {
 	String key = "YIRIIK92UHUVH99AHUDAQXNNR1F24D6U3XD5U65RHNRULMK3GC-08666";
 	LibisBookshelf collection = new LibisBookshelf(key);
-	ArrayList<AbstractBook> books;
+	AbstractBook book;
 
 	@Before
 	public void setUp() throws Exception {
-		books = collection.getBooks(new LibisBarcode("009906485"));
+		book = collection.getBook(new LibisBarcode("009906485"));
 	}
 	
 	@Test
 	public void retrieveBookMetadata() {
-		AbstractBook book = books.get(0);
-		
 		String title = "An introduction to object-oriented programming with Java";
 		String author = "Wu, C. Thomas";
 		String publisher = "McGraw Hill";

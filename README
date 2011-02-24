@@ -1,0 +1,5 @@
+How to build the Bookshelf API from source:
+
+1. Checkout and import the Bookshelf project from GitHub (https://github.com/michaelvanderheeren/Bookshelf).
+2. Check if the build path contains references to:
+	- The libraries (*.jar) inside the libs folder of the Bookshelf project.

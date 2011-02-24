@@ -62,7 +62,7 @@ public class LibisBookshelf extends AbstractBookshelf {
 		this.key = key;
 	}
 	
-	public ArrayList<AbstractBook> getBooks(LibisBarcode barcode) throws BookshelfUnavailableException {	
+	public AbstractBook getBook(LibisBarcode barcode) throws BookshelfUnavailableException, BookNotFoundException {	
 		String feed;
 		feed = getFeed() + getKey();
 		feed += "?func=find-c";
@@ -71,7 +71,12 @@ public class LibisBookshelf extends AbstractBookshelf {
 		feed += "&" + getType().toString();
 		feed += "&ccl_term=BAR=" + barcode;
 		
-		return processFeed(feed);
+		ArrayList<AbstractBook> result = processFeed(feed);
+		
+		if (result.size() <= 0)
+			throw new BookNotFoundException();
+		
+		return result.get(0);
 	}
 	
 	@Override

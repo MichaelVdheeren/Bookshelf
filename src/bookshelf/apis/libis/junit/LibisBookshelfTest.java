@@ -1,10 +1,9 @@
 package bookshelf.apis.libis.junit;
 
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,6 +12,7 @@ import bookshelf.AbstractBook;
 import bookshelf.apis.libis.LibisBarcode;
 import bookshelf.apis.libis.LibisBook;
 import bookshelf.apis.libis.LibisBookshelf;
+import bookshelf.exceptions.BookNotFoundException;
 import bookshelf.exceptions.BookshelfUnavailableException;
 
 
@@ -26,11 +26,11 @@ public class LibisBookshelfTest {
 	
 	
 	@Test
-	public void retrieveBookByBarcode() throws BookshelfUnavailableException {
+	public void retrieveBookByBarcode() throws BookshelfUnavailableException, BookNotFoundException {
 		try {
-			ArrayList<AbstractBook> books = collection.getBooks(new LibisBarcode("009906485"));
-			AbstractBook book = new LibisBook("http://opac.libis.be:80/F/"+key+"?func=full-set-set&set_number=074686&set_entry=000001&format");
-			assertTrue(books.contains(book));
+			AbstractBook foundBook = collection.getBook(new LibisBarcode("009906485"));
+			AbstractBook expectedBook = new LibisBook("http://opac.libis.be:80/F/"+key+"?func=full-set-set&set_number=074686&set_entry=000001&format");
+			assertEquals(expectedBook, foundBook);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

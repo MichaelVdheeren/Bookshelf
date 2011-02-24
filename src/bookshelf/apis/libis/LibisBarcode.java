@@ -1,32 +1,20 @@
 package bookshelf.apis.libis;
 
+import bookshelf.Barcode;
 
-public class LibisBarcode {
-	public final String value;
 
+public class LibisBarcode extends Barcode {
 	public LibisBarcode(String value) {
-		// Remove all dashes
-		value = value.replaceAll("-", "");
-		value = value.trim();
-		
-		this.value = value;
-	}
-
-	@Override
-	public String toString() {
-		return getValue();
-	}
-
-	public String getValue() {
-		return this.value;
+		super(value);
 	}
 	
-	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof LibisBarcode))
-			return false;
-		
-		LibisBarcode code = (LibisBarcode) o;
-		return getValue().equals(code.getValue());
+	public boolean hasValidLength() {
+		return isValidLength(this.getValue());
+	}
+	
+	public static boolean isValidLength(String value) {
+		value = value.replaceAll("-", "");
+		value = value.trim();
+		return value.length() == 9;
 	}
 }
