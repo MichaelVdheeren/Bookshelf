@@ -2,11 +2,15 @@ package bookshelf.apis.google;
 
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
@@ -53,7 +57,17 @@ public class GoogleBook extends AbstractBook {
 	
 	public Image getCover() throws IOException {
 		if(!hasCachedCover()) {
-		    setCover(Toolkit.getDefaultToolkit().getImage(getCoverUrl()));
+			HttpURLConnection coverCon = (HttpURLConnection)
+				getCoverUrl().openConnection();
+			coverCon.addRequestProperty("User-Agent", "Mozilla/5.0");
+			coverCon.connect();
+			
+			InputStream urlStream = coverCon.getInputStream();
+            BufferedImage cover = ImageIO.read(urlStream);
+
+		    setCover(Toolkit.getDefaultToolkit().createImage(cover.getSource()));
+		    urlStream.close();
+		    coverCon.disconnect();
 			setCachedCover(true);
 		}
 
@@ -63,7 +77,8 @@ public class GoogleBook extends AbstractBook {
 	public URL getCoverUrl() throws IOException {
 		if(!hasCachedCoverUrl()) {
 			Element element = getSource().getElementById("summary-frontcover");
-			setCoverUrl(new URL(element.getAttributeValue("href")));
+			String url = element.getAttributeValue("src");
+			setCoverUrl(new URL(url));
 			setCachedCoverUrl(true);
 		}
 
