@@ -15,12 +15,12 @@ public class SingleGoogleBookProcessor extends GoogleBookProcessor {
 		try {
 			GoogleBook book = new GoogleBook(getFeed());
 			books.add(book);
+			this.setChanged();
 			this.notifyObservers(book);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 
 }

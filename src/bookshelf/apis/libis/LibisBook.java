@@ -19,7 +19,6 @@ public class LibisBook extends AbstractBook {
 		bookCon.addRequestProperty("User-Agent", "Mozilla/5.0");
 		setSource(new Source(bookCon));
 		
-		
 		List<Element> keys = getSource().getAllElementsByClass("label");
 		List<Element> values = getSource().getAllElementsByClass("content");
 		String key, value;

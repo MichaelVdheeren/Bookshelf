@@ -21,6 +21,8 @@ public abstract class AbstractBookProcessor extends Observable implements Runnab
 		return (limit>=0);
 	}
 	
+	protected abstract boolean hasReachedLimit();
+	
 	public void setLimit(int limit) {
 		this.limit = limit;
 	}

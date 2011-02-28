@@ -31,6 +31,10 @@ public class GoogleBookProcessor extends AbstractBookProcessor {
 			return null;
 	}
 	
+	protected boolean hasReachedLimit() {
+		return (books.size() >= getLimit());
+	}
+	
 	@Override
 	public void run() {
 		Source source = null;
@@ -47,7 +51,7 @@ public class GoogleBookProcessor extends AbstractBookProcessor {
 		
 		List<Element> urls = source.getElementById("main_content").getAllElements(HTMLElementName.A);
 		
-		for (int i=1; i<urls.size(); i=i+2) {			
+		for (int i=1; i<urls.size() && !(isLimited() && hasReachedLimit()); i=i+2) {			
 			String url = urls.get(i).getAttributeValue("href");
 			int beginId = url.indexOf("id=")+3;
 			int endId = beginId+url.substring(beginId).indexOf("&");
@@ -60,6 +64,7 @@ public class GoogleBookProcessor extends AbstractBookProcessor {
 			try {
 				GoogleBook book = new GoogleBook("http://books.google.com/books?id=" + id);
 				books.add(book);
+				this.setChanged();
 				this.notifyObservers(book);
 			} catch (IOException e) {
 				continue;

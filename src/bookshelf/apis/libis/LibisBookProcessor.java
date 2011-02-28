@@ -32,6 +32,10 @@ public class LibisBookProcessor extends AbstractBookProcessor {
 		else
 			return null;
 	}
+	
+	protected boolean hasReachedLimit() {
+		return (books.size() >= getLimit());
+	}
 
 	@Override
 	public void run() {
@@ -53,7 +57,7 @@ public class LibisBookProcessor extends AbstractBookProcessor {
 		List<Element> trs = tbody.getChildElements();
 		Iterator<Element> iterator = trs.iterator();
 		
-		while (iterator.hasNext()) {
+		while (iterator.hasNext() && !(isLimited() && hasReachedLimit())) {
 			Segment content = iterator.next().getContent();
 			Element a = content.getFirstElement(HTMLElementName.A);
 			
@@ -64,6 +68,7 @@ public class LibisBookProcessor extends AbstractBookProcessor {
 			try {
 				LibisBook book = new LibisBook(url);
 				books.add(book);
+				this.setChanged();
 				this.notifyObservers(book);
 			} catch (IOException e) {
 				continue;
