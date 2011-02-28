@@ -16,8 +16,7 @@ import bookshelf.ISBN;
 
 
 public class GoogleBook extends AbstractBook {
-	private final Source source;
-	
+	private static final long serialVersionUID = 1L;
 	private Image cover;
 	private URL coverUrl;
 	private String summary;
@@ -28,8 +27,7 @@ public class GoogleBook extends AbstractBook {
 	private boolean cachedCoverUrl;
 	private boolean cachedSummary;
 	private boolean cachedRating;
-	private boolean cachedMetadata;
-	private boolean cachedTitles;
+	private boolean cachedTitle;
 	private boolean cachedSubtitles;
 	private boolean cachedWords;
 	
@@ -37,7 +35,8 @@ public class GoogleBook extends AbstractBook {
 		HttpURLConnection bookCon = (HttpURLConnection)
 				(new URL(url)).openConnection();
 		bookCon.addRequestProperty("User-Agent", "Mozilla/5.0");
-		this.source=new Source(bookCon);
+		setSource(new Source(bookCon));
+		this.cacheMetadata();
 	}
 	
 	public GoogleBook(ISBN isbn) throws IOException {
@@ -63,7 +62,7 @@ public class GoogleBook extends AbstractBook {
 	
 	public URL getCoverUrl() throws IOException {
 		if(!hasCachedCoverUrl()) {
-			Element element = source.getElementById("summary-frontcover");
+			Element element = getSource().getElementById("summary-frontcover");
 			setCoverUrl(new URL(element.getAttributeValue("href")));
 			setCachedCoverUrl(true);
 		}
@@ -73,7 +72,7 @@ public class GoogleBook extends AbstractBook {
 	
 	public String getSummary() {
 		if (!hasCachedSummary()) {
-			Element element = source.getElementById("synopsistext");
+			Element element = getSource().getElementById("synopsistext");
 			
 			if (element != null) {
 				setSummary(element.getTextExtractor().setIncludeAttributes(false).toString());
@@ -86,14 +85,14 @@ public class GoogleBook extends AbstractBook {
 	}
 
 	public String getTitle() {
-		if (!hasCachedTitles()) {
-			List<Element> elements = source.getAllElementsByClass("booktitle");
+		if (!hasCachedTitle()) {
+			List<Element> elements = getSource().getAllElementsByClass("booktitle");
 			for (Element e : elements) {
 				e = e.getFirstElement();
 				setTitle(e.getTextExtractor().setIncludeAttributes(false).toString());
 			}
 			
-			setCachedTitles(true);
+			setCachedTitle(true);
 		}
 		
 		return this.title;
@@ -101,7 +100,7 @@ public class GoogleBook extends AbstractBook {
 
 	public ArrayList<String> getSubtitles() {
 		if (!hasCachedSubtitles()) {
-			List<Element> elements = source.getAllElementsByClass("subtitle");
+			List<Element> elements = getSource().getAllElementsByClass("subtitle");
 			for (Element e : elements)
 				addSubtitle(e.getTextExtractor().setIncludeAttributes(false).toString());
 			
@@ -114,7 +113,7 @@ public class GoogleBook extends AbstractBook {
 	public ArrayList<String> getWords() {
 		if (!hasCachedWords()) {
 		
-			Element element = source.getFirstElementByClass("cloud");
+			Element element = getSource().getFirstElementByClass("cloud");
 			if (element != null) {
 				List<Element> elements = element.getAllElements(HTMLElementName.A);
 				for (Element e : elements) {
@@ -130,8 +129,8 @@ public class GoogleBook extends AbstractBook {
 	
 	public float getRating() {
 		if (!hasCachedRating()) {
-			List<Element> starOn = source.getAllElementsByClass("gb-star-on");
-			List<Element> starHalf = source.getAllElementsByClass("gb-star-half");
+			List<Element> starOn = getSource().getAllElementsByClass("gb-star-on");
+			List<Element> starHalf = getSource().getAllElementsByClass("gb-star-half");
 			
 			if (starOn.size() > 0 || starHalf.size() > 0)
 				setRating(1f*starOn.size() + 0.5f*starHalf.size());
@@ -142,9 +141,9 @@ public class GoogleBook extends AbstractBook {
 		return this.rating;
 	}
 	
-	private void cacheMetadata() {
-		List<Element> metalabels = source.getAllElementsByClass("metadata_label");
-		List<Element> metavalues = source.getAllElementsByClass("metadata_value");
+	protected void cacheMetadata() {
+		List<Element> metalabels = getSource().getAllElementsByClass("metadata_label");
+		List<Element> metavalues = getSource().getAllElementsByClass("metadata_value");
 		
 		for (int i=0; i<metalabels.size(); i++) {
 			String label = metalabels.get(i).getTextExtractor().setIncludeAttributes(false).toString();
@@ -165,44 +164,7 @@ public class GoogleBook extends AbstractBook {
 				if (values.length >= 2)
 					setPublishingYear(Integer.parseInt(values[values.length-1]));
 			}
-				
 		}
-	}
-	
-	public ISBN getISBN() {
-		if (!hasCachedMetadata()) {
-			cacheMetadata();
-			setCachedMetadata(true);
-		}
-			
-		return this.isbn;
-	}
-	
-	public ArrayList<String> getAuthors() {
-		if (!hasCachedMetadata()) {
-			cacheMetadata();
-			setCachedMetadata(true);
-		}
-		
-		return new ArrayList<String>(this.authors);
-	}
-	
-	public String getPublisher() {
-		if (!hasCachedMetadata()) {
-			cacheMetadata();
-			setCachedMetadata(true);
-		}
-		
-		return this.publisher;
-	}
-	
-	public int getPublishingYear() {
-		if (!hasCachedMetadata()) {
-			cacheMetadata();
-			setCachedMetadata(true);
-		}
-		
-		return this.publishingYear;
 	}
 	
 	private void setCachedCover(boolean b) {
@@ -213,8 +175,8 @@ public class GoogleBook extends AbstractBook {
 		this.cachedCoverUrl = b;
 	}
 	
-	private void setCachedTitles(boolean b) {
-		this.cachedTitles = b;
+	private void setCachedTitle(boolean b) {
+		this.cachedTitle = b;
 	}
 	
 	private void setCachedSubtitles(boolean b) {
@@ -231,10 +193,6 @@ public class GoogleBook extends AbstractBook {
 	
 	private void setCachedWords(boolean b) {
 		this.cachedWords = b;
-	}
-	
-	private void setCachedMetadata(boolean b) {
-		this.cachedMetadata = b;
 	}
 	
 	private void setCover(Image cover) {
@@ -281,8 +239,8 @@ public class GoogleBook extends AbstractBook {
 		return cachedCoverUrl;
 	}
 	
-	private boolean hasCachedTitles() {
-		return cachedTitles;
+	private boolean hasCachedTitle() {
+		return cachedTitle;
 	}
 	
 	private boolean hasCachedSubtitles() {
@@ -301,18 +259,13 @@ public class GoogleBook extends AbstractBook {
 		return cachedWords;
 	}
 	
-	private boolean hasCachedMetadata() {
-		return cachedMetadata;
-	}
-	
 	public void resetCache() {
 		setCachedCover(false);
 		setCachedCoverUrl(false);
 		setCachedRating(false);
 		setCachedSubtitles(false);
 		setCachedSummary(false);
-		setCachedTitles(false);
+		setCachedTitle(false);
 		setCachedWords(false);
-		setCachedMetadata(false);
 	}
 }

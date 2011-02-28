@@ -1,17 +1,5 @@
 package bookshelf.apis.libis;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import net.htmlparser.jericho.Element;
-import net.htmlparser.jericho.HTMLElementName;
-import net.htmlparser.jericho.Segment;
-import net.htmlparser.jericho.Source;
-import bookshelf.AbstractBook;
 import bookshelf.AbstractBookshelf;
 import bookshelf.BookshelfCache;
 import bookshelf.ISBN;
@@ -62,85 +50,37 @@ public class LibisBookshelf extends AbstractBookshelf {
 		this.key = key;
 	}
 	
-	public AbstractBook getBook(LibisBarcode barcode) throws BookshelfUnavailableException, BookNotFoundException {	
-		String feed;
-		feed = getFeed() + getKey();
-		feed += "?func=find-c";
-		feed += "&" + getCatalogue().toString();
-		feed += "&" + getLibrary().toString();
-		feed += "&" + getType().toString();
-		feed += "&ccl_term=BAR=" + barcode;
+	public LibisBookProcessor getBook(LibisBarcode barcode) throws BookshelfUnavailableException, BookNotFoundException {	
+		String feedQuery;
+		feedQuery = getFeed() + getKey();
+		feedQuery += "?func=find-c";
+		feedQuery += "&" + getCatalogue().toString();
+		feedQuery += "&" + getLibrary().toString();
+		feedQuery += "&" + getType().toString();
+		feedQuery += "&ccl_term=BAR=" + barcode;
 		
-		ArrayList<AbstractBook> result = processFeed(feed);
-		
-		if (result.size() <= 0)
-			throw new BookNotFoundException();
-		
-		return result.get(0);
+		return new LibisBookProcessor(feedQuery);
 	}
-	
+
 	@Override
-	public ArrayList<AbstractBook> getBooks(String query) throws BookshelfUnavailableException {	
+	public LibisBookProcessor getBooks(String query) throws BookshelfUnavailableException {
+		String feedQuery;
+		feedQuery = getFeed() + getKey();
+		feedQuery += "?func=find-b";
+		feedQuery += "&" + getSearchfield().toString();
+		feedQuery += "&" + getCatalogue().toString();
+		feedQuery += "&" + getLibrary().toString();
+		feedQuery += "&" + getType().toString();
+		feedQuery += "&request=" + query;
 		
-		String feed;
-		feed = getFeed() + getKey();
-		feed += "?func=find-b";
-		feed += "&" + getSearchfield().toString();
-		feed += "&" + getCatalogue().toString();
-		feed += "&" + getLibrary().toString();
-		feed += "&" + getType().toString();
-		feed += "&request=" + query;
-		
-		return processFeed(feed);
+		return new LibisBookProcessor(feedQuery);
 	}
 	
-	public AbstractBook getBook(ISBN isbn) throws BookNotFoundException, BookshelfUnavailableException {
+	public LibisBookProcessor getBook(ISBN isbn) throws BookNotFoundException, BookshelfUnavailableException {
 		LibisSearchfield searchfield = getSearchfield();
 		setSearchfield(LibisSearchfield.ISBN);
-		ArrayList<AbstractBook> result = getBooks(isbn.toString());
+		LibisBookProcessor result = getBooks(isbn.toString());
 		setSearchfield(searchfield);
-		
-		if (result.size() <= 0)
-			throw new BookNotFoundException();
-		
-		return result.get(0);
-	}
-	
-	private ArrayList<AbstractBook> processFeed(String feed) throws BookshelfUnavailableException {
-		ArrayList<AbstractBook> result = new ArrayList<AbstractBook>();		
-		Source source = null;
-		try {
-			URL feedUrl = new URL(feed);
-		
-			HttpURLConnection feedCon = (HttpURLConnection) feedUrl.openConnection(); 
-			feedCon.addRequestProperty("User-Agent", "Safari/5.0");
-			
-			source=new Source(feedCon);
-		} catch (IOException e) {
-			throw new BookshelfUnavailableException();
-		}
-		
-		Element iframe = source.getElementById("ShelfNumberShim");
-		Element tbody = source.getNextElement(iframe.getEnd()).getFirstElement();
-		
-		List<Element> trs = tbody.getChildElements();
-		Iterator<Element> iterator = trs.iterator();
-		
-		while (iterator.hasNext()) {
-			Segment content = iterator.next().getContent();
-			Element a = content.getFirstElement(HTMLElementName.A);
-			
-			if (a == null)
-				continue;
-			
-			String url = a.getAttributeValue("href");
-			try {
-				result.add(new LibisBook(url));
-			} catch (IOException e) {
-				// TODO: just skip
-			}
-		}
-		
 		return result;
 	}
 

@@ -8,19 +8,22 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 
-import bookshelf.AbstractBook;
 import bookshelf.ISBN;
+import bookshelf.apis.google.GoogleBook;
+import bookshelf.apis.google.GoogleBookProcessor;
 import bookshelf.apis.google.GoogleBookshelf;
 
 
 public class GoogleBookTest {
 	
 	GoogleBookshelf collection = new GoogleBookshelf();
-	AbstractBook book;
+	GoogleBook book;
 
 	@Before
 	public void setUp() throws Exception {
-		book = collection.getBook(new ISBN("9781591396192"));
+		GoogleBookProcessor processor = collection.getBook(new ISBN("9781591396192"));
+		processor.run();
+		book = processor.getLastBook();
 	}
 	
 	@Test

@@ -1,9 +1,13 @@
 package bookshelf;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public abstract class AbstractBook {
+import net.htmlparser.jericho.Source;
 
+public abstract class AbstractBook implements Serializable {
+	private static final long serialVersionUID = 1L;
+	private Source source;
 	protected ISBN isbn;
 	protected String publisher;
 	protected int publishingYear;
@@ -72,5 +76,20 @@ public abstract class AbstractBook {
 		
 		AbstractBook b = (AbstractBook) o;
 		return getISBN().equals(b.getISBN());
+	}
+	
+	protected Source getSource() {
+		return this.source;
+	}
+
+	protected void setSource(Source source) {
+		this.source = source;
+	}
+	
+	public void combineWith(AbstractBook book) {
+		if (!this.equals(book))
+			return;
+		
+		// Combine information with priority this
 	}
 }

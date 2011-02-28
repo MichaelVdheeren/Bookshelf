@@ -5,26 +5,23 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
-import net.htmlparser.jericho.Config;
 import net.htmlparser.jericho.Element;
-import net.htmlparser.jericho.LoggerProvider;
 import net.htmlparser.jericho.Source;
 import bookshelf.AbstractBook;
 import bookshelf.ISBN;
 
 public class LibisBook extends AbstractBook {
-	private final Source source;
-	
-	public LibisBook(String url) throws IOException {
-		Config.LoggerProvider=LoggerProvider.DISABLED;
-		
+	private static final long serialVersionUID = 1L;
+
+	public LibisBook(String feed) throws IOException {
 		HttpURLConnection bookCon = (HttpURLConnection)
-				(new URL(url)).openConnection();
+				(new URL(feed)).openConnection();
 		bookCon.addRequestProperty("User-Agent", "Mozilla/5.0");
-		this.source=new Source(bookCon);
+		setSource(new Source(bookCon));
 		
-		List<Element> keys = source.getAllElementsByClass("label");
-		List<Element> values = source.getAllElementsByClass("content");
+		
+		List<Element> keys = getSource().getAllElementsByClass("label");
+		List<Element> values = getSource().getAllElementsByClass("content");
 		String key, value;
 		
 		for (int i=0; i<keys.size(); i++) {
@@ -36,7 +33,7 @@ public class LibisBook extends AbstractBook {
 			if (key.equals("Titel")) {
 				setTitle(value);
 			} else if (key.equals("ISBN")) {
-				setISBN(new ISBN(value.replace("\\(*.\\)","")));
+				setISBN(new ISBN(value.replaceAll("\\((.*)\\)","")));
 			} else if (key.equals("Publicatiejaar")) {
 				int year = Integer.parseInt(value);
 				setPublishingYear(year);

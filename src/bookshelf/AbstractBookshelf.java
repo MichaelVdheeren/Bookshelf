@@ -1,7 +1,5 @@
 package bookshelf;
 
-import java.util.ArrayList;
-
 import net.htmlparser.jericho.Config;
 import net.htmlparser.jericho.LoggerProvider;
 import bookshelf.exceptions.BookNotFoundException;
@@ -42,6 +40,6 @@ public abstract class AbstractBookshelf {
 		this.cache = cache;
 	}
 	
-	public abstract ArrayList<AbstractBook> getBooks(String query) throws BookshelfUnavailableException;
-	public abstract AbstractBook getBook(ISBN isbn) throws BookNotFoundException, BookshelfUnavailableException;
+	public abstract AbstractBookProcessor getBooks(String query) throws BookshelfUnavailableException;
+	public abstract AbstractBookProcessor getBook(ISBN isbn) throws BookNotFoundException, BookshelfUnavailableException;
 }

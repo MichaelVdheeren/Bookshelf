@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 
-import bookshelf.AbstractBook;
 import bookshelf.ISBN;
 import bookshelf.apis.google.GoogleBook;
+import bookshelf.apis.google.GoogleBookProcessor;
 import bookshelf.apis.google.GoogleBookshelf;
 import bookshelf.exceptions.BookNotFoundException;
 import bookshelf.exceptions.BookshelfUnavailableException;
@@ -29,9 +29,12 @@ public class GoogleBookshelfTest {
 	@Test
 	public void retrieveBooksByQuery() throws BookshelfUnavailableException {
 		try {
-			ArrayList<AbstractBook> books = collection.getBooks("Blue Ocean Strategy");
+			GoogleBookProcessor processor = collection.getBooks("Blue Ocean Strategy");
+			processor.run();
 			
+			ArrayList<GoogleBook> books = processor.getBooks();
 			ArrayList<GoogleBook> expected = new ArrayList<GoogleBook>();
+			
 			expected.add(new GoogleBook("http://books.google.com/books?id=BmPPAjGaDuQC"));
 			expected.add(new GoogleBook("http://books.google.com/books?id=8ZJbKqMsnWQC"));
 			expected.add(new GoogleBook("http://books.google.com/books?id=s2UO2Apy9ikC"));
@@ -46,7 +49,9 @@ public class GoogleBookshelfTest {
 	
 	@Test
 	public void retrieveBookByISBN() throws BookNotFoundException {
-		AbstractBook book = collection.getBook(new ISBN("9781591396192"));
-		assertEquals("Blue Ocean Strategy: How to Create Uncontested Market Space and Make Competition Irrelevant",book.getTitle());
+		 GoogleBookProcessor processor = collection.getBook(new ISBN("9781591396192"));
+		 processor.run();
+		 GoogleBook book = processor.getLastBook();
+		 assertEquals("Blue Ocean Strategy: How to Create Uncontested Market Space and Make Competition Irrelevant",book.getTitle());
 	}
 }

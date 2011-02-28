@@ -6,20 +6,23 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import bookshelf.AbstractBook;
 import bookshelf.ISBN;
 import bookshelf.apis.libis.LibisBarcode;
+import bookshelf.apis.libis.LibisBook;
+import bookshelf.apis.libis.LibisBookProcessor;
 import bookshelf.apis.libis.LibisBookshelf;
 
 
 public class LibisBookTest {
-	String key = "YIRIIK92UHUVH99AHUDAQXNNR1F24D6U3XD5U65RHNRULMK3GC-08666";
+	String key = "96UNFINK44R9MEHP3HD5NYBU61QV63JSPDUYXIFTY56TYQ9MUX-00871";
 	LibisBookshelf collection = new LibisBookshelf(key);
-	AbstractBook book;
+	LibisBook book;
 
 	@Before
 	public void setUp() throws Exception {
-		book = collection.getBook(new LibisBarcode("009906485"));
+		LibisBookProcessor processor = collection.getBook(new LibisBarcode("009906485"));
+		processor.run();
+		book = processor.getLastBook();
 	}
 	
 	@Test
