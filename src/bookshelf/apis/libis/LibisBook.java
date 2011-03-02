@@ -45,4 +45,8 @@ public class LibisBook extends AbstractBook {
 			}
 		}
 	}
+	
+	public URL getCoverUrl() throws IOException {
+		return new URL("http://books.google.com/books?vid=ISBN"+getISBN()+"&printsec=frontcover&img=1&zoom=1");
+	}
 }

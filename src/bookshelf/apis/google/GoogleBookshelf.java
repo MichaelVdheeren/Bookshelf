@@ -14,6 +14,7 @@ import bookshelf.exceptions.BookshelfUnavailableException;
  */
 public class GoogleBookshelf extends AbstractBookshelf {
 	private final String feed = "http://books.google.com/books?rview=1&hl=en";
+	private BookshelfCache<GoogleBook> cache;
 	
 	/**
 	 * Create a new instance of the Collection.
@@ -21,7 +22,7 @@ public class GoogleBookshelf extends AbstractBookshelf {
 	 * 			CollectionCache class with it's default cache limit.
 	 */
 	public GoogleBookshelf() {
-		super();
+		this(new BookshelfCache<GoogleBook>());
 	}
 	
 	/**
@@ -30,8 +31,18 @@ public class GoogleBookshelf extends AbstractBookshelf {
 	 * 			The cache of the collection.
 	 * @post	The cache of the collection is set to the given <cache>.
 	 */
-	public GoogleBookshelf(String key, BookshelfCache cache) {
-		super(cache);
+	public GoogleBookshelf(BookshelfCache<GoogleBook> cache) {
+		super();
+		setCache(cache);
+	}
+
+	@Override
+	public BookshelfCache<GoogleBook> getCache() {
+		return this.cache;
+	}
+
+	protected void setCache(BookshelfCache<GoogleBook> cache) {
+		this.cache = cache;
 	}
 	
 	public GoogleBookProcessor getBooks(String query) throws BookshelfUnavailableException {

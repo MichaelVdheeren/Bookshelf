@@ -1,16 +1,10 @@
 package bookshelf.apis.google;
 
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.imageio.ImageIO;
 
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
@@ -21,14 +15,10 @@ import bookshelf.ISBN;
 
 public class GoogleBook extends AbstractBook {
 	private static final long serialVersionUID = 1L;
-	private Image cover;
-	private URL coverUrl;
 	private String summary;
 	private float rating = -1f;
 	private ArrayList<String> subtitles = new ArrayList<String>();
 	private ArrayList<String> words = new ArrayList<String>();
-	private boolean cachedCover;
-	private boolean cachedCoverUrl;
 	private boolean cachedSummary;
 	private boolean cachedRating;
 	private boolean cachedTitle;
@@ -55,34 +45,8 @@ public class GoogleBook extends AbstractBook {
 		this.words.add(word);
 	}
 	
-	public Image getCover() throws IOException {
-		if(!hasCachedCover()) {
-			HttpURLConnection coverCon = (HttpURLConnection)
-				getCoverUrl().openConnection();
-			coverCon.addRequestProperty("User-Agent", "Mozilla/5.0");
-			coverCon.connect();
-			
-			InputStream urlStream = coverCon.getInputStream();
-            BufferedImage cover = ImageIO.read(urlStream);
-
-		    setCover(Toolkit.getDefaultToolkit().createImage(cover.getSource()));
-		    urlStream.close();
-		    coverCon.disconnect();
-			setCachedCover(true);
-		}
-
-		return this.cover;
-	}
-	
 	public URL getCoverUrl() throws IOException {
-		if(!hasCachedCoverUrl()) {
-			Element element = getSource().getElementById("summary-frontcover");
-			String url = element.getAttributeValue("src");
-			setCoverUrl(new URL(url));
-			setCachedCoverUrl(true);
-		}
-
-		return this.coverUrl;
+		return new URL("http://books.google.com/books?vid=ISBN"+getISBN()+"&printsec=frontcover&img=1&zoom=1");
 	}
 	
 	public String getSummary() {
@@ -182,14 +146,6 @@ public class GoogleBook extends AbstractBook {
 		}
 	}
 	
-	private void setCachedCover(boolean b) {
-		this.cachedCover = b;
-	}
-	
-	private void setCachedCoverUrl(boolean b) {
-		this.cachedCoverUrl = b;
-	}
-	
 	private void setCachedTitle(boolean b) {
 		this.cachedTitle = b;
 	}
@@ -210,24 +166,12 @@ public class GoogleBook extends AbstractBook {
 		this.cachedWords = b;
 	}
 	
-	private void setCover(Image cover) {
-		this.cover = cover;
-	}
-	
-	private void setCoverUrl(URL coverUrl) {
-		this.coverUrl = coverUrl;
-	}
-	
 	private void setSummary(String summary) {
 		this.summary = summary;
 	}
 	
 	private void setRating(float rating) {
 		this.rating = rating;
-	}
-	
-	public boolean hasCover() throws IOException {
-		return (getCover() != null);
 	}
 	
 	public boolean hasSubtitles() {
@@ -244,14 +188,6 @@ public class GoogleBook extends AbstractBook {
 	
 	public boolean hasWords() {
 		return (getWords().size() > 0);
-	}
-	
-	private boolean hasCachedCover() {
-		return cachedCover;
-	}
-	
-	private boolean hasCachedCoverUrl() {
-		return cachedCoverUrl;
 	}
 	
 	private boolean hasCachedTitle() {
@@ -276,7 +212,6 @@ public class GoogleBook extends AbstractBook {
 	
 	public void resetCache() {
 		setCachedCover(false);
-		setCachedCoverUrl(false);
 		setCachedRating(false);
 		setCachedSubtitles(false);
 		setCachedSummary(false);

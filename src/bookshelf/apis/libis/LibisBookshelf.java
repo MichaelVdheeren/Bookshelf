@@ -20,6 +20,7 @@ public class LibisBookshelf extends AbstractBookshelf {
 	private LibisLibrary library = LibisLibrary.All;
 	private LibisType type = LibisType.All;
 	private LibisSearchfield searchfield = LibisSearchfield.All;
+	private BookshelfCache<LibisBook> cache;
 	
 	/**
 	 * Create a new instance of the Collection.
@@ -31,8 +32,7 @@ public class LibisBookshelf extends AbstractBookshelf {
 	 * 			CollectionCache class with it's default cache limit.
 	 */
 	public LibisBookshelf(String key) {
-		super();
-		this.key = key;
+		this(key, new BookshelfCache<LibisBook>());
 	}
 	
 	/**
@@ -45,9 +45,19 @@ public class LibisBookshelf extends AbstractBookshelf {
 	 * 			to the given <key>.
 	 * @post	The cache of the collection is set to the given <cache>.
 	 */
-	public LibisBookshelf(String key, BookshelfCache cache) {
-		super(cache);
+	public LibisBookshelf(String key, BookshelfCache<LibisBook> cache) {
+		super();
 		this.key = key;
+		setCache(cache);
+	}
+
+	@Override
+	public BookshelfCache<LibisBook> getCache() {
+		return this.cache;
+	}
+
+	protected void setCache(BookshelfCache<LibisBook> cache) {
+		this.cache = cache;
 	}
 	
 	public LibisBookProcessor getBook(LibisBarcode barcode) throws BookshelfUnavailableException, BookNotFoundException {	

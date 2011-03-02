@@ -3,7 +3,7 @@ package bookshelf;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class BookshelfCache extends LinkedHashMap<ISBN, AbstractBook> {
+public class BookshelfCache<E extends AbstractBook> extends LinkedHashMap<ISBN, E> {
 	private static final long serialVersionUID = 1L;
 	private final int maxEntries;
 
@@ -31,7 +31,7 @@ public class BookshelfCache extends LinkedHashMap<ISBN, AbstractBook> {
 	
 	
 	@Override
-    protected boolean removeEldestEntry(Map.Entry<ISBN,AbstractBook> eldest) {
+    protected boolean removeEldestEntry(Map.Entry<ISBN,E> eldest) {
     	return size() > maxEntries;
     }
 }

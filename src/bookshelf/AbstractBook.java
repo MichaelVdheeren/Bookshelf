@@ -1,7 +1,16 @@
 package bookshelf;
 
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
 
 import net.htmlparser.jericho.Source;
 
@@ -12,6 +21,8 @@ public abstract class AbstractBook implements Serializable {
 	protected String publisher;
 	protected int publishingYear;
 	protected String title;
+	private Image cover;
+	private boolean cachedCover;
 	protected ArrayList<String> authors = new ArrayList<String>();
 	
 	public ISBN getISBN() {
@@ -81,6 +92,43 @@ public abstract class AbstractBook implements Serializable {
 	protected Source getSource() {
 		return this.source;
 	}
+	
+	public Image getCover() throws IOException {
+		if(!hasCachedCover()) {
+			HttpURLConnection coverCon = (HttpURLConnection)
+				getCoverUrl().openConnection();
+			coverCon.addRequestProperty("User-Agent", "Mozilla/5.0");
+			coverCon.connect();
+			
+			InputStream urlStream = coverCon.getInputStream();
+            BufferedImage cover = ImageIO.read(urlStream);
+
+		    setCover(Toolkit.getDefaultToolkit().createImage(cover.getSource()));
+		    urlStream.close();
+		    coverCon.disconnect();
+			setCachedCover(true);
+		}
+
+		return this.cover;
+	}
+	
+	protected void setCachedCover(boolean b) {
+		this.cachedCover = b;
+	}
+	
+	private void setCover(Image cover) {
+		this.cover = cover;
+	}
+	
+	public boolean hasCover() throws IOException {
+		return (getCover() != null);
+	}
+	
+	private boolean hasCachedCover() {
+		return cachedCover;
+	}
+	
+	public abstract URL getCoverUrl() throws IOException;
 
 	protected void setSource(Source source) {
 		this.source = source;
