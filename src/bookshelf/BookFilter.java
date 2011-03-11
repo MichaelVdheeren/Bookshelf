@@ -2,6 +2,6 @@ package bookshelf;
 
 import java.util.ArrayList;
 
-public interface BookFilter {
-	public ArrayList<? extends AbstractBook> filter(ArrayList<? extends AbstractBook> books);
+public interface BookFilter<E extends AbstractBook> {
+	public ArrayList<E> filter(ArrayList<E> books);
 }
