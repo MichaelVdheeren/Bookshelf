@@ -18,12 +18,12 @@ public class GoogleBook extends AbstractBook {
 	private String summary;
 	private float rating = -1f;
 	private ArrayList<String> subtitles = new ArrayList<String>();
-	private ArrayList<String> words = new ArrayList<String>();
+	private ArrayList<String> keywords = new ArrayList<String>();
 	private boolean cachedSummary;
 	private boolean cachedRating;
 	private boolean cachedTitle;
 	private boolean cachedSubtitles;
-	private boolean cachedWords;
+	private boolean cachedKeywords;
 	
 	public GoogleBook(String url) throws IOException {
 		HttpURLConnection bookCon = (HttpURLConnection)
@@ -41,8 +41,8 @@ public class GoogleBook extends AbstractBook {
 		this.subtitles.add(subtitle);
 	}
 	
-	private void addWords(String word) {
-		this.words.add(word);
+	private void addKeyword(String word) {
+		this.keywords.add(word);
 	}
 	
 	public URL getCoverUrl() throws IOException {
@@ -89,21 +89,21 @@ public class GoogleBook extends AbstractBook {
 		return new ArrayList<String>(this.subtitles);
 	}
 
-	public ArrayList<String> getWords() {
+	public ArrayList<String> getKeywords() {
 		if (!hasCachedWords()) {
 		
 			Element element = getSource().getFirstElementByClass("cloud");
 			if (element != null) {
 				List<Element> elements = element.getAllElements(HTMLElementName.A);
 				for (Element e : elements) {
-					addWords(e.getTextExtractor().setIncludeAttributes(false).toString());
+					addKeyword(e.getTextExtractor().setIncludeAttributes(false).toString());
 				}
 			}
 			
-			setCachedWords(true);
+			setCachedKeywords(true);
 		}
 		
-		return this.words;
+		return this.keywords;
 	}
 	
 	public float getRating() {
@@ -162,8 +162,8 @@ public class GoogleBook extends AbstractBook {
 		this.cachedRating = b;
 	}
 	
-	private void setCachedWords(boolean b) {
-		this.cachedWords = b;
+	private void setCachedKeywords(boolean b) {
+		this.cachedKeywords = b;
 	}
 	
 	private void setSummary(String summary) {
@@ -186,8 +186,8 @@ public class GoogleBook extends AbstractBook {
 		return (getSummary() != null);
 	}
 	
-	public boolean hasWords() {
-		return (getWords().size() > 0);
+	public boolean hasKeywords() {
+		return (getKeywords().size() > 0);
 	}
 	
 	private boolean hasCachedTitle() {
@@ -207,7 +207,7 @@ public class GoogleBook extends AbstractBook {
 	}
 	
 	private boolean hasCachedWords() {
-		return cachedWords;
+		return cachedKeywords;
 	}
 	
 	public void resetCache() {
@@ -216,6 +216,6 @@ public class GoogleBook extends AbstractBook {
 		setCachedSubtitles(false);
 		setCachedSummary(false);
 		setCachedTitle(false);
-		setCachedWords(false);
+		setCachedKeywords(false);
 	}
 }

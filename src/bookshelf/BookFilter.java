@@ -3,6 +3,6 @@ package bookshelf;
 import java.util.ArrayList;
 
 public interface BookFilter<E extends AbstractBook> {
-	public ArrayList<E> filter(ArrayList<E> books);
-	public boolean filter(E book);
+	public ArrayList<E> applyTo(ArrayList<E> books);
+	public boolean applyTo(E book);
 }
