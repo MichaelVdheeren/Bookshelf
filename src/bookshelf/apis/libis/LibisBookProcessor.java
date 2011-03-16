@@ -40,13 +40,12 @@ public class LibisBookProcessor extends AbstractBookProcessor {
 	@Override
 	public void run() {
 		Source source = null;
+		
 		try {
 			URL feedUrl = new URL(getFeed());
-		
 			HttpURLConnection feedCon = (HttpURLConnection) feedUrl.openConnection(); 
 			feedCon.addRequestProperty("User-Agent", "Safari/5.0");
-			
-			source=new Source(feedCon);
+			source = new Source(feedCon);
 		} catch (IOException e) {
 			throw new RuntimeException (new BookshelfUnavailableException());
 		}

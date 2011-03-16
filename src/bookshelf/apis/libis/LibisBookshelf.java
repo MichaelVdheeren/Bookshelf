@@ -1,5 +1,12 @@
 package bookshelf.apis.libis;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import net.htmlparser.jericho.Element;
+import net.htmlparser.jericho.HTMLElementName;
+import net.htmlparser.jericho.Source;
 import bookshelf.AbstractBookshelf;
 import bookshelf.BookshelfCache;
 import bookshelf.ISBN;
@@ -14,7 +21,7 @@ import bookshelf.exceptions.BookshelfUnavailableException;
  * Class which represents the Libis Book collection.
  */
 public class LibisBookshelf extends AbstractBookshelf {
-	private final String key;
+	private String key;
 	private final String feed = "http://opac.libis.be:80/F/";
 	private LibisCatalogue catalogue = LibisCatalogue.All;
 	private LibisLibrary library = LibisLibrary.All;
@@ -60,7 +67,9 @@ public class LibisBookshelf extends AbstractBookshelf {
 		this.cache = cache;
 	}
 	
-	public LibisBookProcessor getBook(LibisBarcode barcode) throws BookshelfUnavailableException, BookNotFoundException {	
+	public LibisBookProcessor getBook(LibisBarcode barcode) throws BookshelfUnavailableException, BookNotFoundException {
+		checkKey();
+		
 		String feedQuery;
 		feedQuery = getFeed() + getKey();
 		feedQuery += "?func=find-c";
@@ -72,8 +81,32 @@ public class LibisBookshelf extends AbstractBookshelf {
 		return new LibisBookProcessor(feedQuery);
 	}
 
+	private void checkKey() {
+		Source source = null;
+		
+		try {
+			URL feedUrl = new URL(getFeed() + getKey());
+			HttpURLConnection feedCon = (HttpURLConnection) feedUrl.openConnection(); 
+			feedCon.addRequestProperty("User-Agent", "Safari/5.0");
+			source = new Source(feedCon);
+		} catch (IOException e) {
+			throw new RuntimeException (new BookshelfUnavailableException());
+		}
+		
+		Element title = source.getFirstElement(HTMLElementName.TITLE);
+		if (title.getTextExtractor().toString().equals("PDS login")) {
+			Element script = source.getFirstElement(HTMLElementName.SCRIPT);
+			String key = script.toString();
+			int beginIndex = key.indexOf("/F/") + 3;
+			int endIndex = key.lastIndexOf("?");
+			setKey(key.substring(beginIndex, endIndex));
+		}
+	}
+
 	@Override
 	public LibisBookProcessor getBooks(String query) throws BookshelfUnavailableException {
+		checkKey();
+		
 		String feedQuery;
 		feedQuery = getFeed() + getKey();
 		feedQuery += "?func=find-b";
@@ -128,6 +161,10 @@ public class LibisBookshelf extends AbstractBookshelf {
 
 	private String getKey() {
 		return key;
+	}
+	
+	protected void setKey(String key) {
+		this.key = key;
 	}
 
 	public String getFeed() {
