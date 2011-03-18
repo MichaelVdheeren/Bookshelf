@@ -29,6 +29,10 @@ public class LibisBookshelf extends AbstractBookshelf {
 	private LibisSearchfield searchfield = LibisSearchfield.All;
 	private BookshelfCache<LibisBook> cache;
 	
+	public LibisBookshelf() {
+		this("", new BookshelfCache<LibisBook>());
+	}
+	
 	/**
 	 * Create a new instance of the Collection.
 	 * @param	key
@@ -93,8 +97,8 @@ public class LibisBookshelf extends AbstractBookshelf {
 			throw new RuntimeException (new BookshelfUnavailableException());
 		}
 		
-		Element title = source.getFirstElement(HTMLElementName.TITLE);
-		if (title.getTextExtractor().toString().equals("PDS login")) {
+		String title = source.getFirstElement(HTMLElementName.TITLE).getTextExtractor().toString();
+		if (title.equals("PDS login") || title.equals("PDS SSO")) {
 			Element script = source.getFirstElement(HTMLElementName.SCRIPT);
 			String key = script.toString();
 			int beginIndex = key.indexOf("/F/") + 3;
