@@ -11,6 +11,7 @@ import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 import bookshelf.AbstractBook;
 import bookshelf.ISBN;
+import bookshelf.Keyword;
 
 
 public class GoogleBook extends AbstractBook {
@@ -18,7 +19,7 @@ public class GoogleBook extends AbstractBook {
 	private String summary;
 	private float rating = -1f;
 	private ArrayList<String> subtitles = new ArrayList<String>();
-	private ArrayList<String> keywords = new ArrayList<String>();
+	private ArrayList<Keyword> keywords = new ArrayList<Keyword>();
 	private boolean cachedSummary;
 	private boolean cachedRating;
 	private boolean cachedTitle;
@@ -41,8 +42,8 @@ public class GoogleBook extends AbstractBook {
 		this.subtitles.add(subtitle);
 	}
 	
-	private void addKeyword(String word) {
-		this.keywords.add(word);
+	private void addKeyword(Keyword keyword) {
+		this.keywords.add(keyword);
 	}
 	
 	public URL getCoverUrl() throws IOException {
@@ -89,14 +90,18 @@ public class GoogleBook extends AbstractBook {
 		return new ArrayList<String>(this.subtitles);
 	}
 
-	public ArrayList<String> getKeywords() {
+	public ArrayList<Keyword> getKeywords() {
 		if (!hasCachedWords()) {
 		
 			Element element = getSource().getFirstElementByClass("cloud");
 			if (element != null) {
 				List<Element> elements = element.getAllElements(HTMLElementName.A);
 				for (Element e : elements) {
-					addKeyword(e.getTextExtractor().setIncludeAttributes(false).toString());
+					String classValue = e.getAttributeValue("class");
+					int length = classValue.length();
+					int nbr = Integer.parseInt(classValue.substring(length-1, length));
+					String value = e.getTextExtractor().setIncludeAttributes(false).toString();
+					addKeyword(new Keyword(value, 1/(nbr+1)));
 				}
 			}
 			

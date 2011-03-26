@@ -76,6 +76,10 @@ public abstract class AbstractBook implements Serializable {
 	public boolean hasPublisher() {
 		return (getPublisher() != null);
 	}
+	
+	public boolean hasPublishingYear() {
+		return (getPublishingYear() > 0);
+	}
 
 	protected void addAuthor(String author) {
 		this.authors.add(author);
