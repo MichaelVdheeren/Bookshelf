@@ -2,9 +2,9 @@ package bookshelf;
 
 public class Keyword implements Comparable<Keyword> {
 	public final String value;
-	public final float importance;
+	public final double importance;
 	
-	public Keyword(String value, float importance) {
+	public Keyword(String value, double importance) {
 		this.value = value.toLowerCase();
 		this.importance = importance;
 	}
@@ -13,7 +13,7 @@ public class Keyword implements Comparable<Keyword> {
 		return value;
 	}
 
-	public float getImportance() {
+	public double getImportance() {
 		return importance;
 	}
 

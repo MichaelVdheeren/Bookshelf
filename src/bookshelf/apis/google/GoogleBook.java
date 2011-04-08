@@ -99,9 +99,9 @@ public class GoogleBook extends AbstractBook {
 				for (Element e : elements) {
 					String classValue = e.getAttributeValue("class");
 					int length = classValue.length();
-					int nbr = Integer.parseInt(classValue.substring(length-1, length));
+					double nbr = Integer.parseInt(classValue.substring(length-1, length));
 					String value = e.getTextExtractor().setIncludeAttributes(false).toString();
-					addKeyword(new Keyword(value, 1/(nbr+1)));
+					addKeyword(new Keyword(value, 1d/(nbr+1d)));
 				}
 			}
 			
