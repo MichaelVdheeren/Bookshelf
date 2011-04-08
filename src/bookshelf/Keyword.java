@@ -1,6 +1,6 @@
 package bookshelf;
 
-public class Keyword {
+public class Keyword implements Comparable<Keyword> {
 	public final String value;
 	public final float importance;
 	
@@ -40,5 +40,10 @@ public class Keyword {
 		} else if (!value.equals(other.value))
 			return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(Keyword o) {
+		return this.getValue().compareTo(o.getValue());
 	}
 }
