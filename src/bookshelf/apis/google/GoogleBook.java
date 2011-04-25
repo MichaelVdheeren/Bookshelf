@@ -1,10 +1,14 @@
 package bookshelf.apis.google;
 
 import java.io.IOException;
+import java.net.CookieHandler;
+import java.net.CookieManager;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
@@ -27,6 +31,7 @@ public class GoogleBook extends AbstractBook {
 	private boolean cachedKeywords;
 	
 	public GoogleBook(String url) throws IOException {
+		CookieHandler.setDefault(new CookieManager());
 		HttpURLConnection bookCon = (HttpURLConnection)
 				(new URL(url)).openConnection();
 		bookCon.addRequestProperty("User-Agent", "Mozilla/5.0");
@@ -48,6 +53,48 @@ public class GoogleBook extends AbstractBook {
 	
 	public URL getCoverUrl() throws IOException {
 		return new URL("http://books.google.com/books?vid=ISBN"+getISBN()+"&printsec=frontcover&img=1&zoom=1");
+	}
+	
+	/**
+	 * If you use this function you should present Google branding with the pages!
+	 * @return
+	 * @throws IOException
+	 */
+	public ArrayList<String> getPageIds() throws IOException {
+		ArrayList<String> result = new ArrayList<String>();
+		
+		// Get the page id's
+		String url = "http://books.google.com/books?vid=ISBN"+getISBN()+"&pg=0&jscmd=click3";
+		HttpURLConnection pageCon = (HttpURLConnection)
+				(new URL(url)).openConnection();
+		pageCon.addRequestProperty("User-Agent", "Mozilla/5.0");
+		Source pageSource = new Source(pageCon);
+		
+		Pattern pattern = Pattern.compile("\\{\"pid\":\"([^\"]+)\"\\}");
+		Matcher matcher = pattern.matcher(pageSource.getTextExtractor().setIncludeAttributes(false).toString());
+
+		while (matcher.find()) {
+			result.add(matcher.group(1));
+		}
+		
+		return result;
+	}
+	
+	public URL getPage(String pageId) throws IOException {
+		// Get the page id's
+		String url = "http://books.google.com/books?vid=ISBN"+getISBN()+"&pg="+pageId+"&jscmd=click3";
+		HttpURLConnection pageCon = (HttpURLConnection)
+				(new URL(url)).openConnection();
+		pageCon.addRequestProperty("User-agent", "Mozilla/5.0");
+		Source pageSource = new Source(pageCon);
+		
+		Pattern pattern = Pattern.compile("\"pid\":\"([^\"]+)\",\"src\":\"([^\"]+)\"");
+		Matcher matcher = pattern.matcher(pageSource.toString());
+
+		matcher.find();
+		String result = matcher.group(2);
+		result = result.replaceAll("(\\\\u0026)", "&");
+		return new URL(result);
 	}
 	
 	public String getSummary() {

@@ -3,6 +3,7 @@ package bookshelf.apis.google.junit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.junit.Before;
@@ -43,5 +44,19 @@ public class GoogleBookTest {
 		
 		ISBN isbn = new ISBN("1591396190");
 		assertEquals(isbn, book.getISBN());
+		
+		try {
+			System.out.println(book.getPageIds());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			System.out.println(book.getPage("PT30"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
