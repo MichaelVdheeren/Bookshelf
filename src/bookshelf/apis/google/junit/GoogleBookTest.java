@@ -53,7 +53,7 @@ public class GoogleBookTest {
 		}
 		
 		try {
-			System.out.println(book.getPage("PT30"));
+			System.out.println(book.getPageUrl("PT30"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

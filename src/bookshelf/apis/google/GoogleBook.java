@@ -1,6 +1,10 @@
 package bookshelf.apis.google;
 
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.HttpURLConnection;
@@ -9,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.imageio.ImageIO;
 
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
@@ -23,12 +29,14 @@ public class GoogleBook extends AbstractBook {
 	private String summary;
 	private float rating = -1f;
 	private ArrayList<String> subtitles = new ArrayList<String>();
+	private ArrayList<String> pageIds = new ArrayList<String>();
 	private ArrayList<Keyword> keywords = new ArrayList<Keyword>();
 	private boolean cachedSummary;
 	private boolean cachedRating;
 	private boolean cachedTitle;
 	private boolean cachedSubtitles;
 	private boolean cachedKeywords;
+	private boolean cachedPageIds;
 	
 	public GoogleBook(String url) throws IOException {
 		CookieHandler.setDefault(new CookieManager());
@@ -61,26 +69,51 @@ public class GoogleBook extends AbstractBook {
 	 * @throws IOException
 	 */
 	public ArrayList<String> getPageIds() throws IOException {
-		ArrayList<String> result = new ArrayList<String>();
-		
-		// Get the page id's
-		String url = "http://books.google.com/books?vid=ISBN"+getISBN()+"&pg=0&jscmd=click3";
-		HttpURLConnection pageCon = (HttpURLConnection)
-				(new URL(url)).openConnection();
-		pageCon.addRequestProperty("User-Agent", "Mozilla/5.0");
-		Source pageSource = new Source(pageCon);
-		
-		Pattern pattern = Pattern.compile("\\{\"pid\":\"([^\"]+)\"\\}");
-		Matcher matcher = pattern.matcher(pageSource.getTextExtractor().setIncludeAttributes(false).toString());
+		if (!hasCachedPageIds()) {
+			ArrayList<String> result = new ArrayList<String>();
+			
+			// Get the page id's
+			String url = "http://books.google.com/books?vid=ISBN"+getISBN()+"&pg=0&jscmd=click3";
+			HttpURLConnection pageCon = (HttpURLConnection)
+					(new URL(url)).openConnection();
+			pageCon.addRequestProperty("User-Agent", "Mozilla/5.0");
+			Source pageSource = new Source(pageCon);
+			
+			Pattern pattern = Pattern.compile("\\{\"pid\":\"([^\"]+)\"\\}");
+			Matcher matcher = pattern.matcher(pageSource.getTextExtractor().setIncludeAttributes(false).toString());
+	
+			while (matcher.find()) {
+				result.add(matcher.group(1));
+			}
 
-		while (matcher.find()) {
-			result.add(matcher.group(1));
+			setPageIds(result);
+			setCachedPageIds(true);
 		}
 		
+		return this.pageIds;
+	}
+	
+	public boolean hasPagePreviews() {
+		return getSource().getElementById("preview-link") != null;
+	}
+	
+	public Image getPage(String pageId) throws IOException {
+		HttpURLConnection pageCon = (HttpURLConnection)
+			getPageUrl(pageId).openConnection();
+		pageCon.addRequestProperty("User-Agent", "Mozilla/5.0");
+		pageCon.connect();
+		
+		InputStream urlStream = pageCon.getInputStream();
+        BufferedImage page = ImageIO.read(urlStream);
+
+	    Image result = Toolkit.getDefaultToolkit().createImage(page.getSource());
+	    urlStream.close();
+	    pageCon.disconnect();
+
 		return result;
 	}
 	
-	public URL getPage(String pageId) throws IOException {
+	public URL getPageUrl(String pageId) throws IOException {
 		// Get the page id's
 		String url = "http://books.google.com/books?vid=ISBN"+getISBN()+"&pg="+pageId+"&jscmd=click3";
 		HttpURLConnection pageCon = (HttpURLConnection)
@@ -206,6 +239,10 @@ public class GoogleBook extends AbstractBook {
 		this.cachedSubtitles = b;
 	}
 	
+	private void setCachedPageIds(boolean b) {
+		this.cachedPageIds = b;
+	}
+	
 	private void setCachedSummary(boolean b) {
 		this.cachedSummary = b;
 	}
@@ -224,6 +261,10 @@ public class GoogleBook extends AbstractBook {
 	
 	private void setRating(float rating) {
 		this.rating = rating;
+	}
+	
+	private void setPageIds(ArrayList<String> pageIds) {
+		this.pageIds = pageIds;
 	}
 	
 	public boolean hasSubtitles() {
@@ -262,6 +303,10 @@ public class GoogleBook extends AbstractBook {
 		return cachedKeywords;
 	}
 	
+	private boolean hasCachedPageIds() {
+		return cachedPageIds;
+	}
+	
 	public void resetCache() {
 		setCachedCover(false);
 		setCachedRating(false);
@@ -269,5 +314,6 @@ public class GoogleBook extends AbstractBook {
 		setCachedSummary(false);
 		setCachedTitle(false);
 		setCachedKeywords(false);
+		setCachedPageIds(false);
 	}
 }
