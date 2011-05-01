@@ -60,7 +60,7 @@ public class GoogleBook extends AbstractBook {
 	}
 	
 	public URL getCoverUrl() throws IOException {
-		return new URL("http://books.google.com/books?vid=ISBN"+getISBN()+"&printsec=frontcover&img=1&zoom=3");
+		return new URL("http://books.google.com/books?vid=ISBN"+getISBN()+"&printsec=frontcover&img=1&zoom=1");
 	}
 	
 	/**
