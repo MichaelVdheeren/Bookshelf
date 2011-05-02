@@ -85,12 +85,31 @@ public abstract class AbstractBook implements Serializable {
 		this.authors.add(author);
 	}
 	
-	public boolean equals(Object o) {
-		if (!(o instanceof AbstractBook))
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((hasISBN()) ? 0 : getISBN().hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
 			return false;
 		
-		AbstractBook b = (AbstractBook) o;
-		return getISBN().equals(b.getISBN());
+		AbstractBook other = (AbstractBook) obj;
+		
+		if (!hasISBN() || !other.hasISBN())
+			return false;
+		else if (!getISBN().equals(other.getISBN()))
+			return false;
+		
+		return true;
 	}
 	
 	protected Source getSource() {
