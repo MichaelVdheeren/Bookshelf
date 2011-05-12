@@ -56,7 +56,7 @@ public class LibisBookProcessor extends AbstractBookProcessor {
 		List<Element> trs = tbody.getChildElements();
 		Iterator<Element> iterator = trs.iterator();
 		
-		while (iterator.hasNext() && !(isLimited() && hasReachedLimit())) {
+		while (!isFinished()) {
 			Segment content = iterator.next().getContent();
 			Element a = content.getFirstElement(HTMLElementName.A);
 			
@@ -64,6 +64,10 @@ public class LibisBookProcessor extends AbstractBookProcessor {
 				continue;
 			
 			String url = a.getAttributeValue("href");
+			
+			if (!iterator.hasNext())
+				finished = true;
+			
 			try {
 				LibisBook book = new LibisBook(url);
 				books.add(book);
@@ -73,5 +77,10 @@ public class LibisBookProcessor extends AbstractBookProcessor {
 				continue;
 			}
 		}
+	}
+
+	@Override
+	public boolean isFinished() {
+		return (isLimited() && hasReachedLimit()) || finished;
 	}
 }

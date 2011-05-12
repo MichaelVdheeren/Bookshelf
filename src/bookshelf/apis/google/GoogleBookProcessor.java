@@ -70,5 +70,12 @@ public class GoogleBookProcessor extends AbstractBookProcessor {
 				continue;
 			}
 		}
+		
+		finished = true;
+	}
+
+	@Override
+	public boolean isFinished() {
+		return (isLimited() && hasReachedLimit()) || finished;
 	}
 }

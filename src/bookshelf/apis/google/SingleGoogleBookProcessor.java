@@ -22,5 +22,4 @@ public class SingleGoogleBookProcessor extends GoogleBookProcessor {
 			e.printStackTrace();
 		}
 	}
-
 }

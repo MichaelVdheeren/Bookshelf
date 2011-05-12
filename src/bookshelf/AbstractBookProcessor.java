@@ -7,7 +7,7 @@ public abstract class AbstractBookProcessor extends Observable implements Runnab
 	private static final long serialVersionUID = 1L;
 	private final String feed;
 	private int limit = -1;
-	private boolean finished = false;
+	protected boolean finished = false;
 	
 	public AbstractBookProcessor(String feed) {
 		this.feed = feed;
@@ -35,14 +35,7 @@ public abstract class AbstractBookProcessor extends Observable implements Runnab
 		setLimit(-1);
 	}
 	
-	protected void setFinish() {
-		this.finished = true;
-	}
-	
-	public boolean isFinished() {
-		return this.finished;
-	}
-	
+	public abstract boolean isFinished();
 	public abstract ArrayList<? extends AbstractBook> getBooks();
 	public abstract AbstractBook getLastBook();
 }
