@@ -40,20 +40,21 @@ public class LibisBookProcessor extends AbstractBookProcessor {
 	@Override
 	public void run() {
 		Source source = null;
+		Element iframe = null;
+		Element tbody = null;
 		
 		try {
 			URL feedUrl = new URL(getFeed());
 			HttpURLConnection feedCon = (HttpURLConnection) feedUrl.openConnection(); 
 			feedCon.addRequestProperty("User-Agent", "Safari/5.0");
 			source = new Source(feedCon);
+			iframe = source.getElementById("ShelfNumberShim");
+			tbody = source.getNextElement(iframe.getEnd()).getFirstElement();
 		} catch (IOException e) {
 			throw new RuntimeException (new BookshelfUnavailableException());
 		}
 		
-		Element iframe = source.getElementById("ShelfNumberShim");
-		Element tbody = source.getNextElement(iframe.getEnd()).getFirstElement();
-		
-		List<Element> trs = tbody.getChildElements();
+		List<Element> trs = tbody.getAllElementsByClass("lbs_td1");
 		Iterator<Element> iterator = trs.iterator();
 		
 		while (!isFinished()) {

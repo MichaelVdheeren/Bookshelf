@@ -11,6 +11,8 @@ import bookshelf.apis.libis.LibisBarcode;
 import bookshelf.apis.libis.LibisBook;
 import bookshelf.apis.libis.LibisBookProcessor;
 import bookshelf.apis.libis.LibisBookshelf;
+import bookshelf.apis.libis.LibisLocation;
+import bookshelf.apis.libis.parameters.LibisLibrary;
 
 
 public class LibisBookTest {
@@ -38,5 +40,8 @@ public class LibisBookTest {
 		assertEquals(isbn, book.getISBN());
 		assertTrue(book.getAuthors().contains(author));
 		assertEquals(publisher, book.getPublisher());
+		
+		LibisLocation location = new LibisLocation("KULeuven Campusbibl. Arenberg","WAIT","SOM 00");
+		assertTrue(book.getLocations(LibisLibrary.KULeuven_Campusbibl_Arenberg).contains(location));
 	}
 }
