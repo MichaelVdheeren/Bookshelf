@@ -49,7 +49,18 @@ public class LibisBookProcessor extends AbstractBookProcessor {
 			feedCon.addRequestProperty("User-Agent", "Safari/5.0");
 			source = new Source(feedCon);
 			iframe = source.getElementById("ShelfNumberShim");
+			
+			if (iframe == null) {
+				finished = true;
+				return;
+			}
+			
 			tbody = source.getNextElement(iframe.getEnd()).getFirstElement();
+			
+			if (tbody == null) {
+				finished = true;
+				return;
+			}
 		} catch (IOException e) {
 			throw new RuntimeException (new BookshelfUnavailableException());
 		}
