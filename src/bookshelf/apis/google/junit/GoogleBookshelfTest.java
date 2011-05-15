@@ -14,7 +14,6 @@ import bookshelf.ISBN;
 import bookshelf.apis.google.GoogleBook;
 import bookshelf.apis.google.GoogleBookProcessor;
 import bookshelf.apis.google.GoogleBookshelf;
-import bookshelf.exceptions.BookNotFoundException;
 import bookshelf.exceptions.BookshelfUnavailableException;
 
 
@@ -48,7 +47,7 @@ public class GoogleBookshelfTest {
 	}
 	
 	@Test
-	public void retrieveBookByISBN() throws BookNotFoundException {
+	public void retrieveBookByISBN() {
 		 GoogleBookProcessor processor = collection.getBook(new ISBN("9781591396192"));
 		 processor.run();
 		 GoogleBook book = processor.getLastBook();

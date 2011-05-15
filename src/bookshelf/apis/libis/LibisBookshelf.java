@@ -14,7 +14,6 @@ import bookshelf.apis.libis.parameters.LibisCatalogue;
 import bookshelf.apis.libis.parameters.LibisLibrary;
 import bookshelf.apis.libis.parameters.LibisSearchfield;
 import bookshelf.apis.libis.parameters.LibisType;
-import bookshelf.exceptions.BookNotFoundException;
 import bookshelf.exceptions.BookshelfUnavailableException;
 
 /**
@@ -71,7 +70,7 @@ public class LibisBookshelf extends AbstractBookshelf {
 		this.cache = cache;
 	}
 	
-	public LibisBookProcessor getBook(LibisBarcode barcode) throws BookshelfUnavailableException, BookNotFoundException {
+	public LibisBookProcessor getBook(LibisBarcode barcode) throws BookshelfUnavailableException {
 		checkKey();
 		
 		String feedQuery;
@@ -123,7 +122,7 @@ public class LibisBookshelf extends AbstractBookshelf {
 		return new LibisBookProcessor(feedQuery);
 	}
 	
-	public LibisBookProcessor getBook(ISBN isbn) throws BookNotFoundException, BookshelfUnavailableException {
+	public LibisBookProcessor getBook(ISBN isbn) throws BookshelfUnavailableException {
 		LibisSearchfield searchfield = getSearchfield();
 		setSearchfield(LibisSearchfield.ISBN);
 		LibisBookProcessor result = getBooks(isbn.toString());

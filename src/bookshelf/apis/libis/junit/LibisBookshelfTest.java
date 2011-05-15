@@ -11,7 +11,6 @@ import bookshelf.apis.libis.LibisBarcode;
 import bookshelf.apis.libis.LibisBook;
 import bookshelf.apis.libis.LibisBookProcessor;
 import bookshelf.apis.libis.LibisBookshelf;
-import bookshelf.exceptions.BookNotFoundException;
 import bookshelf.exceptions.BookshelfUnavailableException;
 
 
@@ -25,7 +24,7 @@ public class LibisBookshelfTest {
 	
 	
 	@Test
-	public void retrieveBookByBarcode() throws BookshelfUnavailableException, BookNotFoundException {
+	public void retrieveBookByBarcode() throws BookshelfUnavailableException {
 		LibisBookProcessor processor = collection.getBook(new LibisBarcode("009906485"));
 		processor.run();
 		LibisBook foundBook = processor.getLastBook();
@@ -33,7 +32,7 @@ public class LibisBookshelfTest {
 	}
 	
 	@Test
-	public void retrieveBookByISBN() throws BookNotFoundException, BookshelfUnavailableException {
+	public void retrieveBookByISBN() throws BookshelfUnavailableException {
 		LibisBookProcessor processor = collection.getBook(new ISBN("978-0-470-39880-7"));
 		processor.run();
 		LibisBook foundBook = processor.getLastBook();
