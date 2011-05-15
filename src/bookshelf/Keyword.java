@@ -1,6 +1,9 @@
 package bookshelf;
 
-public class Keyword implements Comparable<Keyword> {
+import java.io.Serializable;
+
+public class Keyword implements Comparable<Keyword>, Serializable {
+	private static final long serialVersionUID = 1L;
 	public final String value;
 	public final double importance;
 	

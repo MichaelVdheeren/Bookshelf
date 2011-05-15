@@ -17,7 +17,6 @@ import bookshelf.exceptions.LocationUnavailableException;
 public class LibisBook extends AbstractBook {
 	private static final long serialVersionUID = 1L;
 	private String location;
-	private String permalink;
 
 	public LibisBook(String feed) throws IOException {
 		HttpURLConnection bookCon = (HttpURLConnection)
@@ -50,8 +49,6 @@ public class LibisBook extends AbstractBook {
 				setPublisher(value.replaceAll("^.* : ", ""));
 			} else if (key.equals("DISP_ITM1")) {
 				location = values.get(i).getFirstElement(HTMLElementName.A).getAttributeValue("href");
-			} else if (key.equals("DRL_PERMALINK")) {
-				permalink = value.substring(0, value.lastIndexOf("&"));
 			}
 		}
 	}

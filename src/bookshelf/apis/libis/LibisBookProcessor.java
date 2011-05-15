@@ -23,7 +23,7 @@ public class LibisBookProcessor extends AbstractBookProcessor {
 	}
 	
 	public ArrayList<LibisBook> getBooks() {
-		return new ArrayList<LibisBook>(this.getBooks());
+		return new ArrayList<LibisBook>(this.books);
 	}
 	
 	public LibisBook getLastBook() {

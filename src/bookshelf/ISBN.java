@@ -1,10 +1,13 @@
 package bookshelf;
 
+import java.io.Serializable;
+
 
 /**
  * Class representing an International Standard Book Number
  */
-public class ISBN {
+public class ISBN implements Serializable {
+	private static final long serialVersionUID = 1L;
 	public final String value;
 	
 	/**

@@ -1,9 +1,13 @@
 package bookshelf.apis.libis;
 
+import java.io.Serializable;
+
 import bookshelf.Barcode;
 
 
-public class LibisBarcode extends Barcode {
+public class LibisBarcode extends Barcode implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	public LibisBarcode(String value) {
 		super(value);
 	}

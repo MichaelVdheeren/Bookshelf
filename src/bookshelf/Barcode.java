@@ -1,7 +1,9 @@
 package bookshelf;
 
+import java.io.Serializable;
 
-public class Barcode {
+public class Barcode implements Serializable {
+	private static final long serialVersionUID = 1L;
 	public final String value;
 
 	public Barcode(String value) {
