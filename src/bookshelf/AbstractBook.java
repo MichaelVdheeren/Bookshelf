@@ -14,6 +14,9 @@ import javax.imageio.ImageIO;
 
 import net.htmlparser.jericho.Source;
 
+/**
+ * This abstract class represents a book
+ */
 public abstract class AbstractBook implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Source source;
